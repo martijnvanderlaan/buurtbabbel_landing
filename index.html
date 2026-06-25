@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="nl" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="BuurtBabbel - de positieve buurt-app waar je niets typt. Tik op een knop, stuur een zwaaitje en regel in seconden een wandelmaatje, geleende boormachine of bordje soep. Zonder ruis en ruzies van de groepsapp." />
+  <title>BuurtBabbel - De positieve app voor jouw buurt</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            body: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['"Space Mono"', 'ui-monospace', 'monospace'],
+          },
+          colors: {
+            ink: '#0E1330',
+            paper: '#F6F7FB',
+            primary: { DEFAULT: '#4F46E5', dark: '#4338CA', light: '#6366F1', tint: '#EEF0FF' },
+            accent: { DEFAULT: '#FF5470', dark: '#E23E5B', tint: '#FFE9EE' },
+            mint: { DEFAULT: '#12B886', dark: '#0E9A72', tint: '#E5F8F1' },
+            line: '#DDE1F2',
+          },
+          boxShadow: {
+            soft: '0 1px 2px rgba(14,19,48,0.06)',
+            card: '0 2px 8px rgba(14,19,48,0.05), 0 16px 36px -18px rgba(14,19,48,0.20)',
+            lift: '0 18px 48px -16px rgba(79,70,229,0.40)',
+            pin: '0 8px 20px -6px rgba(14,19,48,0.28)',
+          },
+          animation: {
+            float: 'float 7s ease-in-out infinite',
+            'float-slow': 'float 9s ease-in-out 1s infinite',
+            ring: 'ring 2.4s cubic-bezier(0.2, 0.7, 0.3, 1) infinite',
+            flow: 'flow 1.6s linear infinite',
+            pop: 'pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-10px)' },
+            },
+            ring: {
+              '0%': { transform: 'scale(0.7)', opacity: '0.8' },
+              '100%': { transform: 'scale(2.2)', opacity: '0' },
+            },
+            flow: { to: { 'stroke-dashoffset': '-24' } },
+            pop: {
+              '0%': { transform: 'scale(1)' },
+              '50%': { transform: 'scale(1.28)' },
+              '100%': { transform: 'scale(1)' },
+            },
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    html { -webkit-tap-highlight-color: transparent; }
+    body { background-color: #F6F7FB; }
+
+    /* Buurtkaart: terugkerend stratenraster */
+    .map-grid {
+      background-image:
+        linear-gradient(rgba(79,70,229,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(79,70,229,0.06) 1px, transparent 1px);
+      background-size: 30px 30px;
+    }
+    .map-grid-strong {
+      background-image:
+        linear-gradient(rgba(79,70,229,0.10) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(79,70,229,0.10) 1px, transparent 1px);
+      background-size: 26px 26px;
+    }
+
+    /* Mono eyebrow-label met pin */
+    .eyebrow {
+      font-family: '"Space Mono"', ui-monospace, monospace;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    /* Glas alleen voor de zwevende nav */
+    .glass {
+      background: rgba(255,255,255,0.82);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    /* Knoppen */
+    .btn {
+      transition: transform .18s cubic-bezier(.16,1,.3,1), box-shadow .18s ease, background-color .18s ease, color .18s ease;
+      will-change: transform;
+    }
+    .btn:active { transform: translateY(1px) scale(.985); }
+    .btn-primary { background-color: #4F46E5; color: #fff; }
+    .btn-primary:hover { background-color: #4338CA; box-shadow: 0 16px 34px -12px rgba(79,70,229,.55); transform: translateY(-2px); }
+    .btn-ghost { background-color: #fff; color: #0E1330; border: 1px solid #DDE1F2; }
+    .btn-ghost:hover { border-color: #4F46E5; color: #4338CA; transform: translateY(-2px); box-shadow: 0 12px 28px -16px rgba(14,19,48,.35); }
+
+    /* Map pin */
+    .pin { position: relative; display: grid; place-items: center; }
+    .pin-dot { width: 14px; height: 14px; border-radius: 9999px; background: #FF5470; box-shadow: 0 0 0 4px rgba(255,84,112,.18), 0 6px 14px -4px rgba(255,84,112,.6); position: relative; z-index: 2; }
+    .pin-ring { position: absolute; width: 14px; height: 14px; border-radius: 9999px; border: 2px solid rgba(255,84,112,.55); animation: ring 2.4s cubic-bezier(.2,.7,.3,1) infinite; }
+    .pin-primary .pin-dot { background: #4F46E5; box-shadow: 0 0 0 4px rgba(79,70,229,.16), 0 6px 14px -4px rgba(79,70,229,.6); }
+    .pin-primary .pin-ring { border-color: rgba(79,70,229,.55); }
+    .pin-mint .pin-dot { background: #12B886; box-shadow: 0 0 0 4px rgba(18,184,134,.16), 0 6px 14px -4px rgba(18,184,134,.6); }
+    .pin-mint .pin-ring { border-color: rgba(18,184,134,.55); }
+
+    /* Route-lijn (marcherende stippen) */
+    .route-path { stroke-dasharray: 2 10; stroke-linecap: round; animation: flow 1.6s linear infinite; }
+
+    /* Reveal on scroll */
+    .reveal { opacity: 0; transform: translateY(22px); transition: opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1); }
+    .reveal.in { opacity: 1; transform: none; }
+
+    /* Telefoon-tijdlijn scrollbar verbergen */
+    .phone-scroll::-webkit-scrollbar { width: 0; height: 0; }
+    .phone-scroll { scrollbar-width: none; -ms-overflow-style: none; }
+
+    /* Toast */
+    .toast { transition: transform .45s cubic-bezier(.16,1,.3,1), opacity .35s ease; transform: translateX(120%); opacity: 0; }
+    .toast.show { transform: translateX(0); opacity: 1; }
+
+    /* FAQ */
+    .faq-panel { overflow: hidden; max-height: 0; transition: max-height .35s ease; }
+    .faq-icon { transition: transform .3s ease; }
+    .faq-open .faq-icon { transform: rotate(45deg); }
+
+    .underline-swoosh { stroke: #FF5470; stroke-width: 4; fill: none; stroke-linecap: round; stroke-dasharray: 240; stroke-dashoffset: 240; transition: stroke-dashoffset 1s ease .3s; }
+    .reveal.in .underline-swoosh { stroke-dashoffset: 0; }
+
+    /* Toegankelijke focus-states */
+    a:focus-visible, button:focus-visible, [tabindex]:focus-visible {
+      outline: 2px solid #4F46E5;
+      outline-offset: 2px;
+      border-radius: 8px;
+    }
+    .lead-form input:focus { outline: none; }
+    .form-shell:focus-within { box-shadow: 0 0 0 3px rgba(79,70,229,.35), 0 2px 8px rgba(14,19,48,.05), 0 16px 36px -18px rgba(14,19,48,.20); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1 !important; transform: none !important; }
+      .pin-ring, .route-path, .animate-float, .animate-float-slow { animation: none !important; }
+      html { scroll-behavior: auto; }
+      .underline-swoosh { stroke-dashoffset: 0; transition: none; }
+    }
+  </style>
+</head>
+
+<body class="font-body bg-paper text-ink antialiased overflow-x-hidden">
+  <a href="#hero" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[200] focus:bg-white focus:text-ink focus:px-4 focus:py-2 focus:rounded-xl focus:shadow-card">Naar inhoud</a>
+
+  <!-- TOAST -->
+  <div id="toast" role="status" aria-live="polite" class="toast fixed top-24 right-4 z-[100] w-[min(92vw,360px)]">
+    <div class="relative bg-white rounded-2xl shadow-lift border border-line p-4 pl-5">
+      <span class="absolute -left-1.5 top-5 pin" aria-hidden="true"><span class="pin-dot"></span></span>
+      <div class="flex items-start gap-3">
+        <div class="shrink-0 w-10 h-10 rounded-xl bg-mint-tint grid place-items-center">
+          <svg class="w-5 h-5 text-mint-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m5 13 4 4L19 7"/></svg>
+        </div>
+        <div>
+          <p class="font-display font-bold leading-tight" id="toast-title">Op de kaart gezet!</p>
+          <p id="toast-message" class="text-sm text-ink/60 mt-0.5">We geven een seintje zodra jouw buurt live gaat.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <header class="fixed top-0 inset-x-0 z-50">
+    <nav class="glass mx-3 mt-3 md:mx-auto md:max-w-6xl rounded-2xl border border-white/70 shadow-card px-3.5 py-2.5 flex items-center justify-between">
+      <a href="#hero" class="flex items-center gap-2.5 group" aria-label="BuurtBabbel home">
+        <span class="relative w-9 h-9 rounded-xl bg-primary grid place-items-center shadow-soft group-hover:scale-105 transition-transform">
+          <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C7.86 2 4.5 5.36 4.5 9.5c0 5.25 6.2 11.4 7.04 12.2a.66.66 0 0 0 .92 0c.84-.8 7.04-6.95 7.04-12.2C19.5 5.36 16.14 2 12 2Zm0 9.75A2.25 2.25 0 1 1 12 7.25a2.25 2.25 0 0 1 0 4.5Z"/></svg>
+          <span class="absolute -right-0.5 -top-0.5 w-2.5 h-2.5 rounded-full bg-accent border-2 border-white"></span>
+        </span>
+        <span class="font-display font-extrabold text-lg tracking-tight">Buurt<span class="text-primary">Babbel</span></span>
+      </a>
+
+      <div class="hidden md:flex items-center gap-7 text-sm font-medium text-ink/70">
+        <a href="#hoe" class="hover:text-primary transition-colors">Zo werkt het</a>
+        <a href="#functies" class="hover:text-primary transition-colors">Functies</a>
+        <a href="#nieuwsbrief" class="hover:text-primary transition-colors">Nieuwsbrief</a>
+        <a href="#vragen" class="hover:text-primary transition-colors">Vragen</a>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <span class="hidden lg:inline-flex items-center gap-1.5 eyebrow text-[11px] text-primary bg-primary-tint rounded-full px-3 py-1.5">
+          <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C7.86 2 4.5 5.36 4.5 9.5c0 5.25 6.2 11.4 7.04 12.2a.66.66 0 0 0 .92 0c.84-.8 7.04-6.95 7.04-12.2C19.5 5.36 16.14 2 12 2Zm0 9.75A2.25 2.25 0 1 1 12 7.25a2.25 2.25 0 0 1 0 4.5Z"/></svg>
+          Live in 3 buurten
+        </span>
+        <a href="#hero-form" class="btn btn-primary hidden sm:inline-flex text-sm font-semibold px-4 py-2.5 rounded-xl">Ontdek mijn buurt</a>
+        <button id="menu-btn" class="md:hidden p-2 rounded-lg hover:bg-primary-tint transition-colors" aria-label="Menu openen" aria-expanded="false" aria-controls="mobile-menu">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </div>
+    </nav>
+
+    <div id="mobile-menu" class="hidden md:hidden glass mx-3 mt-2 rounded-2xl border border-white/70 shadow-card p-3 flex flex-col">
+      <a href="#hoe" class="text-sm font-medium text-ink/70 hover:text-primary px-3 py-2.5 rounded-lg hover:bg-primary-tint transition-colors">Zo werkt het</a>
+      <a href="#functies" class="text-sm font-medium text-ink/70 hover:text-primary px-3 py-2.5 rounded-lg hover:bg-primary-tint transition-colors">Functies</a>
+      <a href="#nieuwsbrief" class="text-sm font-medium text-ink/70 hover:text-primary px-3 py-2.5 rounded-lg hover:bg-primary-tint transition-colors">Nieuwsbrief</a>
+      <a href="#vragen" class="text-sm font-medium text-ink/70 hover:text-primary px-3 py-2.5 rounded-lg hover:bg-primary-tint transition-colors">Vragen</a>
+      <a href="#hero-form" class="btn btn-primary text-sm font-semibold px-4 py-3 rounded-xl text-center mt-1">Ontdek mijn buurt</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section id="hero" class="relative overflow-hidden pt-28 sm:pt-32 pb-16 lg:pb-24">
+      <div class="map-grid absolute inset-0 -z-10" aria-hidden="true"></div>
+      <div class="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-paper to-transparent -z-10" aria-hidden="true"></div>
+      <div class="absolute -z-10 -top-24 right-[-10%] w-[420px] h-[420px] rounded-full bg-primary-tint blur-3xl opacity-70" aria-hidden="true"></div>
+      <div class="absolute -z-10 bottom-[-20%] left-[-10%] w-[380px] h-[380px] rounded-full bg-accent-tint blur-3xl opacity-60" aria-hidden="true"></div>
+
+      <div class="max-w-6xl mx-auto px-4 grid lg:grid-cols-[1.05fr_1fr] gap-12 lg:gap-10 items-center">
+        <div class="reveal">
+          <p class="eyebrow inline-flex items-center gap-2 text-[12px] text-primary mb-5">
+            <span class="pin pin-primary"><span class="pin-dot !w-2.5 !h-2.5"></span></span>
+            De positieve buurt-app
+          </p>
+
+          <h1 class="font-display font-extrabold text-[2.6rem] leading-[1.05] sm:text-5xl lg:text-[3.6rem] tracking-tight">
+            BuurtBabbel: De positieve app voor
+            <span class="relative inline-block text-primary">jouw buurt.
+              <svg class="absolute -bottom-2 left-0 w-full" height="14" viewBox="0 0 240 14" fill="none" preserveAspectRatio="none" aria-hidden="true">
+                <path class="underline-swoosh" d="M3 8c40-6 120-7 234-3"/>
+              </svg>
+            </span>
+          </h1>
+
+          <p class="mt-7 text-lg text-ink/70 leading-relaxed max-w-xl">
+            In BuurtBabbel typ je niets. Je tikt op een knop, kiest een emoji of stuurt een zwaaitje. Zo regel je in seconden een wandelmaatje, een geleende boormachine of een bordje soep &mdash; zonder de ruis en ruzies van de groepsapp.
+          </p>
+
+          <form id="hero-form" class="lead-form mt-8 max-w-xl" novalidate>
+            <div class="form-shell flex flex-col sm:flex-row gap-2.5 p-2 bg-white rounded-2xl border border-line shadow-card">
+              <div class="flex-1 flex items-center gap-2 px-3">
+                <svg class="w-5 h-5 text-ink/30 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5 12 13l9-5.5M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z"/></svg>
+                <label for="hero-email" class="sr-only">Je e-mailadres</label>
+                <input type="email" id="hero-email" name="email" placeholder="Je e-mailadres" required autocomplete="email"
+                  class="w-full py-3 bg-transparent text-ink placeholder:text-ink/40 focus:outline-none" />
+              </div>
+              <div class="flex items-center gap-2 px-3 sm:border-l border-line sm:w-44">
+                <svg class="w-5 h-5 text-ink/30 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C7.86 2 4.5 5.36 4.5 9.5c0 5.25 6.2 11.4 7.04 12.2a.66.66 0 0 0 .92 0c.84-.8 7.04-6.95 7.04-12.2C19.5 5.36 16.14 2 12 2Zm0 9.75A2.25 2.25 0 1 1 12 7.25a2.25 2.25 0 0 1 0 4.5Z"/></svg>
+                <label for="hero-postcode" class="sr-only">Je postcode</label>
+                <input type="text" id="hero-postcode" name="postcode" placeholder="1234 AB" required maxlength="7" autocomplete="postal-code"
+                  class="w-full py-3 bg-transparent text-ink placeholder:text-ink/40 focus:outline-none font-mono uppercase tracking-wider" />
+              </div>
+              <button type="submit" class="btn btn-primary font-display font-bold px-6 py-3.5 rounded-xl whitespace-nowrap">
+                Ontdek mijn buurt
+              </button>
+            </div>
+            <p class="form-error hidden text-sm text-accent-dark mt-2 font-medium pl-1"></p>
+            <p class="form-help text-sm text-ink/50 mt-3 pl-1">Gratis. Geen gedoe. We mailen alleen als jouw buurt live gaat.</p>
+          </form>
+
+          <div class="mt-7 flex flex-wrap items-center gap-3">
+            <a href="#" class="btn group inline-flex items-center gap-3 bg-ink hover:bg-ink/90 text-white rounded-xl pl-3.5 pr-5 py-2.5 hover:-translate-y-0.5">
+              <svg class="w-7 h-7" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+              <span class="text-left leading-none"><span class="block text-[10px] opacity-70 mb-0.5">Download in de</span><span class="block text-sm font-semibold">App Store</span></span>
+            </a>
+            <a href="#" class="btn group inline-flex items-center gap-3 bg-ink hover:bg-ink/90 text-white rounded-xl pl-3.5 pr-5 py-2.5 hover:-translate-y-0.5">
+              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M3.6 1.8 13.8 12 3.6 22.2a2 2 0 0 1-.6-1.4V3.2a2 2 0 0 1 .6-1.4Zm11.3 6.4 2.9 1.7a2 2 0 0 1 0 3.4l-2.9 1.7L11.4 12l3.5-3.8ZM5 .9l9 5.2-2.6 2.8L5 .9Zm0 22.2 6.4-8 2.6 2.8L5 23.1Z"/></svg>
+              <span class="text-left leading-none"><span class="block text-[10px] opacity-70 mb-0.5">Ontdek het op</span><span class="block text-sm font-semibold">Google Play</span></span>
+            </a>
+          </div>
+
+          <div class="mt-7 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-ink/55">
+            <span class="inline-flex items-center gap-1.5"><svg class="w-4 h-4 text-mint" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 4 5v6c0 5 3.4 8.4 8 11 4.6-2.6 8-6 8-11V5l-8-3Z"/></svg> Alleen je postcode</span>
+            <span class="inline-flex items-center gap-1.5"><svg class="w-4 h-4 text-mint" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m5 13 4 4L19 7"/></svg> Geen advertenties</span>
+            <span class="inline-flex items-center gap-1.5"><svg class="w-4 h-4 text-mint" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m5 13 4 4L19 7"/></svg> Verbinden via WhatsApp</span>
+          </div>
+        </div>
+
+        <!-- BUURTKAART VISUAL -->
+        <div class="reveal relative mx-auto w-full max-w-md lg:max-w-none">
+          <div class="relative rounded-[2rem] border border-line bg-white shadow-card p-3 overflow-hidden">
+            <!-- kaart-chrome -->
+            <div class="flex items-center justify-between px-2 pt-1 pb-3">
+              <span class="eyebrow text-[11px] text-ink/45 inline-flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-accent" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C7.86 2 4.5 5.36 4.5 9.5c0 5.25 6.2 11.4 7.04 12.2a.66.66 0 0 0 .92 0c.84-.8 7.04-6.95 7.04-12.2C19.5 5.36 16.14 2 12 2Zm0 9.75A2.25 2.25 0 1 1 12 7.25a2.25 2.25 0 0 1 0 4.5Z"/></svg>
+                1071 AB &middot; De Pijp
+              </span>
+              <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-mint-dark bg-mint-tint rounded-full px-2.5 py-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-mint animate-float"></span> Nu actief
+              </span>
+            </div>
+
+            <!-- de kaart zelf -->
+            <div class="relative rounded-3xl overflow-hidden bg-paper map-grid-strong aspect-[4/5] sm:aspect-[5/5]">
+              <svg class="absolute inset-0 w-full h-full" viewBox="0 0 400 460" fill="none" aria-hidden="true">
+                <rect x="0" y="0" width="400" height="460" fill="transparent"/>
+                <path d="M-20 120 H 420" stroke="#C9CEEA" stroke-width="14" stroke-linecap="round"/>
+                <path d="M-20 300 H 420" stroke="#C9CEEA" stroke-width="10" stroke-linecap="round"/>
+                <path d="M120 -20 V 480" stroke="#C9CEEA" stroke-width="12" stroke-linecap="round"/>
+                <path d="M280 -20 V 480" stroke="#C9CEEA" stroke-width="9" stroke-linecap="round"/>
+                <rect x="150" y="150" width="110" height="120" rx="16" fill="#E5F8F1"/>
+                <path d="M165 235 q 20 -40 40 0 t 40 0" stroke="#9FE6CC" stroke-width="4" fill="none" stroke-linecap="round"/>
+                <circle cx="205" cy="205" r="10" fill="#9FE6CC"/>
+                <path class="route-path" d="M70 95 C 130 95, 130 205, 205 205 S 330 360, 330 360" stroke="#FF5470" stroke-width="3" fill="none"/>
+              </svg>
+
+              <!-- pins + zwevende kaartjes -->
+              <div class="absolute" style="left:10%;top:14%;">
+                <span class="pin pin-primary"><span class="pin-ring"></span><span class="pin-dot"></span></span>
+              </div>
+              <div class="absolute w-[58%] max-w-[210px]" style="left:14%;top:3%;">
+                <div class="bg-white rounded-xl border border-line shadow-pin p-2.5 animate-float">
+                  <p class="eyebrow text-[9px] text-primary">Activiteit</p>
+                  <p class="text-[13px] font-semibold leading-tight mt-0.5">Ochtendrondje hardlopen</p>
+                  <p class="text-[11px] text-ink/50 mt-0.5">Morgen 07:30 &middot; 8 buren</p>
+                </div>
+              </div>
+
+              <div class="absolute" style="left:48%;top:42%;">
+                <span class="pin pin-mint"><span class="pin-ring"></span><span class="pin-dot"></span></span>
+              </div>
+              <div class="absolute w-[56%] max-w-[200px]" style="left:36%;top:50%;">
+                <div class="bg-white rounded-xl border border-line shadow-pin p-2.5 animate-float-slow">
+                  <p class="eyebrow text-[9px] text-mint-dark">Eten delen</p>
+                  <p class="text-[13px] font-semibold leading-tight mt-0.5">Verse pompoensoep over</p>
+                  <p class="text-[11px] text-ink/50 mt-0.5">Nog 3 porties</p>
+                </div>
+              </div>
+
+              <div class="absolute" style="left:80%;top:76%;">
+                <span class="pin"><span class="pin-ring"></span><span class="pin-dot"></span></span>
+              </div>
+              <div class="absolute w-[52%] max-w-[190px]" style="left:6%;top:74%;">
+                <div class="bg-white rounded-xl border border-line shadow-pin p-2.5 animate-float">
+                  <p class="eyebrow text-[9px] text-accent-dark">Praatje</p>
+                  <p class="text-[13px] font-semibold leading-tight mt-0.5">Anja zoekt wandelmaatje</p>
+                  <p class="text-[11px] text-ink/50 mt-0.5">Vanmiddag 15:00 👋</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- zwevend bewijs-badge -->
+          <div class="absolute -bottom-5 -left-3 sm:-left-6 bg-white rounded-2xl border border-line shadow-lift px-4 py-3 flex items-center gap-3 animate-float-slow">
+            <div class="flex -space-x-2">
+              <span class="w-8 h-8 rounded-full bg-primary grid place-items-center text-white text-xs font-bold border-2 border-white">F</span>
+              <span class="w-8 h-8 rounded-full bg-accent grid place-items-center text-white text-xs font-bold border-2 border-white">J</span>
+              <span class="w-8 h-8 rounded-full bg-mint grid place-items-center text-white text-xs font-bold border-2 border-white">S</span>
+            </div>
+            <div>
+              <p class="font-display font-bold text-sm leading-none">1.248 buren</p>
+              <p class="text-[11px] text-ink/50 mt-1">al op de kaart</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SOCIAL PROOF -->
+    <section class="pt-10 pb-6 mt-6 sm:mt-10">
+      <div class="max-w-6xl mx-auto px-4">
+        <div class="reveal bg-white rounded-3xl border border-line shadow-card overflow-hidden">
+          <div class="grid sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-line">
+            <div class="p-6 text-center">
+              <p class="font-display font-extrabold text-3xl text-ink tabular-nums" data-count="1248" data-suffix="">0</p>
+              <p class="text-sm text-ink/55 mt-1">buren aangesloten</p>
+            </div>
+            <div class="p-6 text-center">
+              <p class="font-display font-extrabold text-3xl text-ink tabular-nums" data-count="320" data-suffix="+">0</p>
+              <p class="text-sm text-ink/55 mt-1">activiteiten gestart</p>
+            </div>
+            <div class="p-6 text-center">
+              <p class="font-display font-extrabold text-3xl text-ink">4,8<span class="text-ink/30 text-xl">/5</span></p>
+              <p class="text-sm text-ink/55 mt-1">gemiddelde beoordeling</p>
+            </div>
+            <div class="p-6 text-center">
+              <p class="font-display font-extrabold text-3xl text-ink">0</p>
+              <p class="text-sm text-ink/55 mt-1">ruzies &amp; beheerders</p>
+            </div>
+          </div>
+          <div class="border-t border-line bg-paper/60 px-6 py-3 text-center">
+            <p class="eyebrow text-[11px] text-ink/45">In besloten pilot getest in De Pijp &middot; Lombok &middot; Zeeheldenbuurt</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WAAROM TEKSTVRIJ -->
+    <section class="py-20 sm:py-28">
+      <div class="max-w-6xl mx-auto px-4">
+        <div class="reveal max-w-2xl mb-12">
+          <p class="eyebrow inline-flex items-center gap-2 text-[12px] text-accent-dark mb-4">
+            <span class="w-6 h-px bg-accent"></span> Waarom tekstvrij
+          </p>
+          <h2 class="font-display font-extrabold text-3xl sm:text-[2.6rem] leading-[1.1] tracking-tight">Buurtgroepen lopen altijd vast.<br class="hidden sm:block"> BuurtBabbel niet.</h2>
+          <p class="mt-5 text-lg text-ink/65 leading-relaxed">Eén vrij tekstveld en het ontspoort: meningen, ruis, ruzie. Daarom haalden we het tekstveld er gewoon uit. Je doet alles met knoppen, keuzes en emoji &mdash; dus er valt niets om over te bekvechten.</p>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-6 items-stretch">
+          <!-- Vroeger: groepsapp -->
+          <div class="reveal relative bg-white rounded-3xl border border-line shadow-card p-5 sm:p-7">
+            <div class="flex items-center justify-between mb-5">
+              <span class="inline-flex items-center gap-2 text-sm font-semibold text-ink/55"><span class="w-2.5 h-2.5 rounded-full bg-accent"></span> De buurt-groepsapp</span>
+              <span class="text-xs font-mono text-accent-dark bg-accent-tint rounded-full px-2.5 py-1">142 ongelezen</span>
+            </div>
+            <div class="space-y-2.5">
+              <div class="max-w-[80%] bg-paper rounded-2xl rounded-tl-sm border border-line px-3.5 py-2.5">
+                <p class="text-[11px] font-semibold text-accent-dark mb-0.5">Henk &middot; 21:58</p>
+                <p class="text-sm text-ink/80">Wie parkeert er WEER voor mijn inrit?? 😤</p>
+              </div>
+              <div class="max-w-[80%] bg-paper rounded-2xl rounded-tl-sm border border-line px-3.5 py-2.5">
+                <p class="text-[11px] font-semibold text-ink/55 mb-0.5">Marja &middot; 22:03</p>
+                <p class="text-sm text-ink/80">Mag dit soort gedoe niet ergens anders? 🙄</p>
+              </div>
+              <div class="max-w-[85%] bg-paper rounded-2xl rounded-tl-sm border border-line px-3.5 py-2.5">
+                <p class="text-[11px] font-semibold text-ink/55 mb-0.5">Onbekend nummer &middot; 22:07</p>
+                <p class="text-sm text-ink/80">Ik zeg alleen wat iedereen denkt hoor…</p>
+              </div>
+              <div class="flex items-center gap-2 pl-1 pt-1">
+                <span class="flex gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-ink/30 animate-float"></span>
+                  <span class="w-1.5 h-1.5 rounded-full bg-ink/30 animate-float-slow"></span>
+                  <span class="w-1.5 h-1.5 rounded-full bg-ink/30 animate-float"></span>
+                </span>
+                <span class="text-xs text-ink/40">Henk is aan het typen…</span>
+              </div>
+            </div>
+            <div class="mt-5 pt-4 border-t border-line flex items-center gap-2 text-sm text-ink/50">
+              <svg class="w-4 h-4 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
+              Ruis, ruzie en een beheerder die het opgeeft.
+            </div>
+          </div>
+
+          <!-- Nu: BuurtBabbel -->
+          <div class="reveal relative bg-primary rounded-3xl shadow-lift p-5 sm:p-7 overflow-hidden" style="transition-delay:.1s">
+            <div class="map-grid absolute inset-0 opacity-[0.18]" aria-hidden="true"></div>
+            <div class="relative">
+              <div class="flex items-center justify-between mb-5">
+                <span class="inline-flex items-center gap-2 text-sm font-semibold text-white"><span class="w-2.5 h-2.5 rounded-full bg-mint"></span> BuurtBabbel</span>
+                <span class="text-xs font-mono text-white/80 bg-white/15 rounded-full px-2.5 py-1">0 ruzies</span>
+              </div>
+              <div class="space-y-2.5">
+                <div class="bg-white rounded-2xl p-3.5 flex items-center gap-3">
+                  <span class="w-9 h-9 rounded-xl bg-primary-tint grid place-items-center shrink-0">
+                    <svg class="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M13 4v6h6M5 20l5-5m-2-9H5a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-7"/></svg>
+                  </span>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-semibold leading-tight">Ochtendrondje hardlopen</p>
+                    <p class="text-xs text-ink/50">Morgen 07:30 &middot; 8 buren doen mee</p>
+                  </div>
+                  <span class="text-xs font-bold text-primary bg-primary-tint rounded-lg px-2.5 py-1.5 shrink-0">Ik ben erbij!</span>
+                </div>
+                <div class="bg-white rounded-2xl p-3.5 flex items-center gap-3">
+                  <span class="w-9 h-9 rounded-xl bg-mint-tint grid place-items-center shrink-0">
+                    <svg class="w-5 h-5 text-mint-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 11h16a8 8 0 0 1-8 8 8 8 0 0 1-8-8Zm4-3c0-2 1-3 1-3m3 3c0-2 1-3 1-3"/></svg>
+                  </span>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-semibold leading-tight">Verse pompoensoep over</p>
+                    <p class="text-xs text-ink/50">Van Pieter &middot; Nog 3 porties</p>
+                  </div>
+                  <span class="text-lg shrink-0">🍲</span>
+                </div>
+                <div class="bg-white rounded-2xl p-3.5 flex items-center gap-3">
+                  <span class="w-9 h-9 rounded-xl bg-accent-tint grid place-items-center shrink-0 text-lg">👋</span>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-semibold leading-tight">Anja zoekt een wandelmaatje</p>
+                    <p class="text-xs text-ink/50">Vanmiddag 15:00</p>
+                  </div>
+                  <span class="text-xs font-bold text-mint-dark bg-mint-tint rounded-lg px-2.5 py-1.5 shrink-0">Zwaaitje</span>
+                </div>
+              </div>
+              <div class="mt-5 pt-4 border-t border-white/20 flex items-center gap-2 text-sm text-white/85">
+                <svg class="w-4 h-4 text-mint" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="m5 13 4 4L19 7"/></svg>
+                Duidelijke acties. Geen tekst, geen drama.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid sm:grid-cols-3 gap-4 mt-6">
+          <div class="reveal bg-white rounded-2xl border border-line p-5">
+            <p class="font-display font-bold text-ink">Geen vrij tekstveld</p>
+            <p class="text-sm text-ink/60 mt-1.5">Geen scheldpartijen, geen eindeloze meningen. Je kiest uit kant-en-klare acties.</p>
+          </div>
+          <div class="reveal bg-white rounded-2xl border border-line p-5" style="transition-delay:.08s">
+            <p class="font-display font-bold text-ink">Meteen duidelijk</p>
+            <p class="text-sm text-ink/60 mt-1.5">Eén tik zegt precies genoeg: meedoen, helpen of een bordje halen.</p>
+          </div>
+          <div class="reveal bg-white rounded-2xl border border-line p-5" style="transition-delay:.16s">
+            <p class="font-display font-bold text-ink">Draait vanzelf</p>
+            <p class="text-sm text-ink/60 mt-1.5">Nieuws komt automatisch binnen. Geen beheerder die het hele weekend modereert.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ZO WERKT HET -->
+    <section id="hoe" class="relative py-20 sm:py-28 scroll-mt-24">
+      <div class="map-grid absolute inset-0 -z-10 opacity-60" aria-hidden="true"></div>
+      <div class="max-w-6xl mx-auto px-4">
+        <div class="reveal text-center max-w-2xl mx-auto mb-16">
+          <p class="eyebrow inline-flex items-center gap-2 text-[12px] text-primary mb-4 justify-center">
+            <span class="pin pin-primary"><span class="pin-dot !w-2.5 !h-2.5"></span></span> Zo werkt het
+          </p>
+          <h2 class="font-display font-extrabold text-3xl sm:text-[2.6rem] leading-[1.1] tracking-tight">Van postcode naar buur, in drie haltes.</h2>
+          <p class="mt-5 text-lg text-ink/65 leading-relaxed">Volg de route. Geen account-gedoe, geen handleiding &mdash; binnen een minuut zit je in je eigen buurt.</p>
+        </div>
+
+        <div class="relative">
+          <!-- route achter de stappen (desktop) -->
+          <svg class="hidden md:block absolute left-0 right-0 top-[58px] w-full h-24 -z-0" viewBox="0 0 1000 100" fill="none" preserveAspectRatio="none" aria-hidden="true">
+            <path class="route-path" d="M120 50 C 300 -10, 360 110, 500 50 S 720 -10, 880 50" stroke="#C4C9E8" stroke-width="3"/>
+          </svg>
+
+          <div class="grid md:grid-cols-3 gap-6 lg:gap-8 relative">
+            <div class="reveal">
+              <div class="relative bg-white rounded-3xl border border-line shadow-card p-7 h-full hover:shadow-lift hover:-translate-y-1 transition-all duration-300">
+                <div class="flex items-center justify-between mb-6">
+                  <span class="w-14 h-14 rounded-2xl bg-primary-tint grid place-items-center">
+                    <svg class="w-7 h-7 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21s7-5.7 7-11a7 7 0 1 0-14 0c0 5.3 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+                  </span>
+                  <span class="font-mono text-5xl font-bold text-line">01</span>
+                </div>
+                <h3 class="font-display font-bold text-xl mb-2">Vul je postcode in</h3>
+                <p class="text-ink/60 leading-relaxed">Je komt alleen in jouw buurt. Geen vreemden uit de hele stad &mdash; alleen mensen op loopafstand.</p>
+              </div>
+            </div>
+
+            <div class="reveal md:mt-10" style="transition-delay:.1s">
+              <div class="relative bg-white rounded-3xl border border-line shadow-card p-7 h-full hover:shadow-lift hover:-translate-y-1 transition-all duration-300">
+                <div class="flex items-center justify-between mb-6">
+                  <span class="w-14 h-14 rounded-2xl bg-accent-tint grid place-items-center">
+                    <svg class="w-7 h-7 text-accent-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 11.5 11 14l4.5-5M7.5 4h9a3.5 3.5 0 0 1 3.5 3.5v9a3.5 3.5 0 0 1-3.5 3.5h-9A3.5 3.5 0 0 1 4 16.5v-9A3.5 3.5 0 0 1 7.5 4Z"/></svg>
+                  </span>
+                  <span class="font-mono text-5xl font-bold text-line">02</span>
+                </div>
+                <h3 class="font-display font-bold text-xl mb-2">Kies wat je leuk vindt</h3>
+                <p class="text-ink/60 leading-relaxed">Eén tik. Meedoen, helpen, een bordje halen of een zwaaitje sturen &mdash; typen hoeft nooit.</p>
+              </div>
+            </div>
+
+            <div class="reveal md:mt-20" style="transition-delay:.2s">
+              <div class="relative bg-white rounded-3xl border border-line shadow-card p-7 h-full hover:shadow-lift hover:-translate-y-1 transition-all duration-300">
+                <div class="flex items-center justify-between mb-6">
+                  <span class="w-14 h-14 rounded-2xl bg-mint-tint grid place-items-center">
+                    <svg class="w-7 h-7 text-mint-dark" viewBox="0 0 24 24" fill="currentColor"><path d="M19.05 4.91A9.82 9.82 0 0 0 12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.91-7.02ZM12.05 20.2a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 1 1 7.18 4.06Zm4.5-6.16c-.25-.12-1.46-.72-1.69-.8-.23-.08-.39-.12-.56.12-.16.25-.64.8-.78.97-.14.16-.29.18-.54.06-.25-.12-1.04-.38-1.98-1.22-.73-.65-1.23-1.46-1.37-1.71-.14-.25-.01-.38.11-.5.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.16.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.48c-.16 0-.43.06-.65.31-.22.25-.85.84-.85 2.05 0 1.21.88 2.38 1 2.54.12.16 1.73 2.64 4.19 3.7.59.25 1.04.4 1.4.52.59.19 1.12.16 1.54.1.47-.07 1.46-.6 1.66-1.18.21-.58.21-1.07.14-1.18-.06-.11-.22-.17-.47-.29Z"/></svg>
+                  </span>
+                  <span class="font-mono text-5xl font-bold text-line">03</span>
+                </div>
+                <h3 class="font-display font-bold text-xl mb-2">Ontmoet je buren</h3>
+                <p class="text-ink/60 leading-relaxed">Klikt het? Dan opent BuurtBabbel een WhatsApp-chat met een kant-en-klaar berichtje. Jij hoeft alleen te versturen.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- INTERACTIEVE PREVIEW -->
+    <section id="preview" class="relative py-20 sm:py-28 bg-ink text-white overflow-hidden scroll-mt-24">
+      <div class="absolute inset-0 opacity-[0.07]" aria-hidden="true" style="background-image:linear-gradient(rgba(255,255,255,.6) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.6) 1px,transparent 1px);background-size:30px 30px;"></div>
+      <div class="absolute -top-24 -right-20 w-[420px] h-[420px] rounded-full bg-primary/30 blur-3xl" aria-hidden="true"></div>
+      <div class="absolute -bottom-24 -left-20 w-[380px] h-[380px] rounded-full bg-accent/20 blur-3xl" aria-hidden="true"></div>
+
+      <div class="relative max-w-6xl mx-auto px-4 grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <div class="reveal">
+          <p class="eyebrow inline-flex items-center gap-2 text-[12px] text-accent mb-4">
+            <span class="w-6 h-px bg-accent"></span> Live preview
+          </p>
+          <h2 class="font-display font-extrabold text-3xl sm:text-[2.6rem] leading-[1.1] tracking-tight">Dit is de tijdlijn.<br>Tik er gerust op.</h2>
+          <p class="mt-5 text-lg text-white/70 leading-relaxed max-w-md">Geen screenshots, maar de echte interactie. Elke knop doet precies wat-ie in de app ook doet &mdash; helemaal zonder typen.</p>
+
+          <ul class="mt-8 space-y-3 max-w-md">
+            <li class="flex items-start gap-3"><span class="mt-0.5 w-6 h-6 rounded-lg bg-white/10 grid place-items-center shrink-0"><svg class="w-3.5 h-3.5 text-mint" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m5 13 4 4L19 7"/></svg></span><span class="text-white/80"><span class="font-semibold text-white">Doe mee</span> met een activiteit en zie de teller live oplopen.</span></li>
+            <li class="flex items-start gap-3"><span class="mt-0.5 w-6 h-6 rounded-lg bg-white/10 grid place-items-center shrink-0"><svg class="w-3.5 h-3.5 text-mint" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m5 13 4 4L19 7"/></svg></span><span class="text-white/80"><span class="font-semibold text-white">Stuur een zwaaitje</span> en maak direct een match via WhatsApp.</span></li>
+            <li class="flex items-start gap-3"><span class="mt-0.5 w-6 h-6 rounded-lg bg-white/10 grid place-items-center shrink-0"><svg class="w-3.5 h-3.5 text-mint" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m5 13 4 4L19 7"/></svg></span><span class="text-white/80"><span class="font-semibold text-white">Reageer met emoji</span> op het buurtnieuws van de gemeente.</span></li>
+          </ul>
+
+          <p class="mt-8 inline-flex items-center gap-2 text-sm font-mono text-white/60 bg-white/5 border border-white/10 rounded-full px-4 py-2">
+            <span class="relative flex h-2 w-2"><span class="absolute inline-flex h-full w-full rounded-full bg-accent opacity-75 animate-ping"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-accent"></span></span>
+            Probeer de knoppen hiernaast
+          </p>
+        </div>
+
+        <!-- TELEFOON -->
+        <div class="reveal flex justify-center">
+          <div class="relative">
+            <div class="absolute -inset-6 bg-gradient-to-br from-primary/40 via-accent/30 to-mint/30 rounded-[3.5rem] blur-2xl opacity-70" aria-hidden="true"></div>
+            <div class="relative bg-[#0A0E22] rounded-[2.9rem] p-2.5 shadow-2xl w-[324px] sm:w-[360px] ring-1 ring-white/10">
+              <div class="absolute top-2.5 left-1/2 -translate-x-1/2 w-28 h-6 bg-[#0A0E22] rounded-b-2xl z-20"></div>
+              <div class="bg-paper text-ink rounded-[2.35rem] overflow-hidden">
+                <!-- status bar -->
+                <div class="flex items-center justify-between px-6 pt-3 pb-1 text-[11px] font-semibold text-ink/70">
+                  <span class="font-mono">09:41</span>
+                  <div class="flex items-center gap-1.5">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M2 16h3v4H2zM7 11h3v9H7zM12 7h3v13h-3zM17 3h3v17h-3z"/></svg>
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4C7.3 4 3.6 6 1 9l11 12L23 9c-2.6-3-6.3-5-11-5Z"/></svg>
+                    <svg class="w-5 h-4" viewBox="0 0 26 24" fill="none"><rect x="1" y="6" width="20" height="12" rx="3" stroke="currentColor" stroke-width="2"/><rect x="3.5" y="8.5" width="13" height="7" rx="1.5" fill="currentColor"/><rect x="22.5" y="9.5" width="2.5" height="5" rx="1.25" fill="currentColor"/></svg>
+                  </div>
+                </div>
+                <!-- app header -->
+                <div class="px-5 py-3 flex items-center justify-between border-b border-line bg-white">
+                  <div class="flex items-center gap-2.5">
+                    <span class="w-8 h-8 rounded-lg bg-primary grid place-items-center">
+                      <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C7.86 2 4.5 5.36 4.5 9.5c0 5.25 6.2 11.4 7.04 12.2a.66.66 0 0 0 .92 0c.84-.8 7.04-6.95 7.04-12.2C19.5 5.36 16.14 2 12 2Zm0 9.75A2.25 2.25 0 1 1 12 7.25a2.25 2.25 0 0 1 0 4.5Z"/></svg>
+                    </span>
+                    <div>
+                      <p class="font-display font-bold text-sm leading-none">Jouw buurt</p>
+                      <p class="text-[11px] font-mono text-ink/45 mt-1">1071 AB &middot; DE PIJP</p>
+                    </div>
+                  </div>
+                  <span class="relative w-9 h-9 rounded-full bg-paper border border-line grid place-items-center">
+                    <svg class="w-4.5 h-4.5 text-ink/50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+                    <span class="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-accent text-white text-[9px] font-bold grid place-items-center border-2 border-white">3</span>
+                  </span>
+                </div>
+
+                <!-- tijdlijn -->
+                <div class="phone-scroll h-[540px] overflow-y-auto px-3.5 py-4 space-y-3">
+                  <p class="eyebrow text-[10px] text-ink/40 px-1">Vandaag</p>
+
+                  <!-- 1. Buurtactiviteit -->
+                  <article id="card-activity" class="bg-white rounded-2xl border border-line shadow-soft p-4 transition-all duration-300">
+                    <div class="flex items-center gap-2 mb-2.5">
+                      <span class="w-8 h-8 rounded-lg bg-primary-tint grid place-items-center shrink-0">
+                        <svg class="w-4.5 h-4.5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M13 4a1.5 1.5 0 1 0 0-.01M7 21l2.5-5 2.5 2 1-4m-1 4 3 3m-6-9 1-3 3 1 2 3"/></svg>
+                      </span>
+                      <div class="min-w-0">
+                        <p class="eyebrow text-[9px] text-primary">Buurtactiviteit</p>
+                        <p class="font-semibold text-sm leading-tight">Ochtendrondje hardlopen</p>
+                      </div>
+                    </div>
+                    <p class="text-xs text-ink/50 mb-2">Morgen 07:30 &middot; ingang Vondelpark-zuid</p>
+                    <p id="activity-count" class="text-xs font-semibold text-primary mb-3" aria-live="polite"><span id="activity-num" class="tabular-nums">8</span> buren doen mee</p>
+                    <button id="btn-activity" type="button" class="btn w-full text-sm font-bold py-2.5 rounded-xl btn-primary">Ik ben erbij!</button>
+                  </article>
+
+                  <!-- 2. Eten delen -->
+                  <article id="card-food" class="bg-white rounded-2xl border border-line shadow-soft p-4 transition-all duration-300">
+                    <div class="flex items-center gap-2 mb-2.5">
+                      <span class="w-8 h-8 rounded-lg bg-mint-tint grid place-items-center shrink-0 text-base">🍲</span>
+                      <div class="min-w-0">
+                        <p class="eyebrow text-[9px] text-mint-dark">Eten delen</p>
+                        <p class="font-semibold text-sm leading-tight">Verse pompoensoep over</p>
+                      </div>
+                    </div>
+                    <p class="text-xs text-ink/50 mb-2">Van Pieter (Govert Flinckstraat) &middot; ophalen vóór 20:00</p>
+                    <p id="food-count" class="text-xs font-semibold text-mint-dark mb-3" aria-live="polite">Nog <span id="food-num" class="tabular-nums">3</span> porties beschikbaar</p>
+                    <button id="btn-food" type="button" class="btn w-full text-sm font-bold py-2.5 rounded-xl bg-mint text-white hover:bg-mint-dark">Ik kom een portie halen</button>
+                  </article>
+
+                  <!-- 3. Zin in een praatje -->
+                  <article id="card-chat" class="bg-white rounded-2xl border border-line shadow-soft p-4 transition-all duration-300">
+                    <div id="chat-content">
+                      <div class="flex items-center gap-2 mb-2.5">
+                        <span class="w-8 h-8 rounded-lg bg-accent-tint grid place-items-center shrink-0 text-base">👋</span>
+                        <div class="min-w-0">
+                          <p class="eyebrow text-[9px] text-accent-dark">Zin in een praatje</p>
+                          <p class="font-semibold text-sm leading-tight">Anja (68) zoekt een wandelmaatje</p>
+                        </div>
+                      </div>
+                      <p class="text-xs text-ink/50 mb-3">Vanmiddag rond 15:00 &middot; rustig blokje om</p>
+                      <button id="btn-wave" type="button" class="btn w-full text-sm font-bold py-2.5 rounded-xl bg-accent text-white hover:bg-accent-dark">Stuur een zwaaitje 👋</button>
+                    </div>
+                  </article>
+
+                  <!-- 4. Buurtnieuws -->
+                  <article class="bg-white rounded-2xl border border-line shadow-soft p-4">
+                    <div class="flex items-center gap-2 mb-2.5">
+                      <span class="w-8 h-8 rounded-lg bg-ink/5 grid place-items-center shrink-0">
+                        <svg class="w-4.5 h-4.5 text-ink/60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h11a2 2 0 0 1 2 2v9a2 2 0 0 0 2 2H6a2 2 0 0 1-2-2V6Zm3 4h6M7 14h6m6-5h.5a1.5 1.5 0 0 1 1.5 1.5V17"/></svg>
+                      </span>
+                      <div class="min-w-0">
+                        <p class="eyebrow text-[9px] text-ink/45">Buurtnieuws &middot; automatisch</p>
+                        <p class="font-semibold text-sm leading-tight">Herinrichting Sarphatipark start in mei</p>
+                      </div>
+                    </div>
+                    <p class="text-xs text-ink/50 mb-3">Bron: gemeente Amsterdam (RSS)</p>
+                    <div class="flex gap-2">
+                      <button data-emoji="heart" class="btn emoji-btn flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-paper hover:bg-accent-tint border border-line text-sm">❤️ <span class="emoji-count font-semibold text-xs tabular-nums">24</span></button>
+                      <button data-emoji="thumbs" class="btn emoji-btn flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-paper hover:bg-primary-tint border border-line text-sm">👍 <span class="emoji-count font-semibold text-xs tabular-nums">18</span></button>
+                      <button data-emoji="party" class="btn emoji-btn flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-paper hover:bg-mint-tint border border-line text-sm">🎉 <span class="emoji-count font-semibold text-xs tabular-nums">11</span></button>
+                    </div>
+                  </article>
+
+                  <!-- 5. Elkaar helpen -->
+                  <article id="card-help" class="bg-white rounded-2xl border border-line shadow-soft p-4 transition-all duration-300">
+                    <div id="help-content">
+                      <div class="flex items-center gap-2 mb-2.5">
+                        <span class="w-8 h-8 rounded-lg bg-primary-tint grid place-items-center shrink-0 text-base">🪜</span>
+                        <div class="min-w-0">
+                          <p class="eyebrow text-[9px] text-primary">Elkaar helpen</p>
+                          <p class="font-semibold text-sm leading-tight">Kees zoekt een ladder (3m)</p>
+                        </div>
+                      </div>
+                      <p class="text-xs text-ink/50 mb-3">Vandaag, tijdstip flexibel &middot; 200m verderop</p>
+                      <button id="btn-help" type="button" class="btn w-full text-sm font-bold py-2.5 rounded-xl btn-primary">Ik help je!</button>
+                    </div>
+                  </article>
+
+                  <p class="text-center text-[11px] text-ink/35 pt-1 pb-2">Je bent helemaal bij &middot; geen ruis, geen reclame</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FUNCTIES -->
+    <section id="functies" class="py-20 sm:py-28 scroll-mt-24">
+      <div class="max-w-6xl mx-auto px-4">
+        <div class="reveal text-center max-w-2xl mx-auto mb-14">
+          <p class="eyebrow inline-flex items-center gap-2 text-[12px] text-primary mb-4 justify-center">
+            <span class="w-6 h-px bg-primary"></span> Wat je kunt doen <span class="w-6 h-px bg-primary"></span>
+          </p>
+          <h2 class="font-display font-extrabold text-3xl sm:text-[2.6rem] leading-[1.1] tracking-tight">Vijf bouwstenen. Allemaal met één tik.</h2>
+          <p class="mt-5 text-lg text-ink/65 leading-relaxed">Elke functie is een soort kaartje op de buurtkaart. Je hoeft alleen te kiezen wat bij je past.</p>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <article class="reveal group bg-white rounded-3xl border border-line shadow-card p-7 hover:-translate-y-1 hover:shadow-lift transition-all duration-300">
+            <span class="w-12 h-12 rounded-2xl bg-primary-tint grid place-items-center mb-5 group-hover:scale-110 transition-transform">
+              <svg class="w-6 h-6 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M13 4a1.5 1.5 0 1 0 0-.01M7 21l2.5-5 2.5 2 1-4m-1 4 3 3m-6-9 1-3 3 1 2 3"/></svg>
+            </span>
+            <h3 class="font-display font-bold text-lg mb-2">Buurtactiviteiten</h3>
+            <p class="text-ink/60 leading-relaxed text-[15px]">Van ochtendyoga tot samen naar de markt. Tik op <span class="font-semibold text-ink">"Ik ben erbij!"</span> en de teller loopt op.</p>
+          </article>
+
+          <article class="reveal group bg-white rounded-3xl border border-line shadow-card p-7 hover:-translate-y-1 hover:shadow-lift transition-all duration-300" style="transition-delay:.06s">
+            <span class="w-12 h-12 rounded-2xl bg-mint-tint grid place-items-center mb-5 group-hover:scale-110 transition-transform text-2xl">🍲</span>
+            <h3 class="font-display font-bold text-lg mb-2">Eten delen</h3>
+            <p class="text-ink/60 leading-relaxed text-[15px]">Te veel gekookt? Deel het in plaats van weggooien. Buren halen een portie op &mdash; minder verspilling, meer contact.</p>
+          </article>
+
+          <article class="reveal group bg-white rounded-3xl border border-line shadow-card p-7 hover:-translate-y-1 hover:shadow-lift transition-all duration-300" style="transition-delay:.12s">
+            <span class="w-12 h-12 rounded-2xl bg-accent-tint grid place-items-center mb-5 group-hover:scale-110 transition-transform text-2xl">👋</span>
+            <h3 class="font-display font-bold text-lg mb-2">Zin in een praatje</h3>
+            <p class="text-ink/60 leading-relaxed text-[15px]">Een zwaaitje is genoeg om contact te leggen. Zwaait de ander terug? Dan opent er een WhatsApp-chat.</p>
+          </article>
+
+          <article class="reveal group bg-white rounded-3xl border border-line shadow-card p-7 hover:-translate-y-1 hover:shadow-lift transition-all duration-300" style="transition-delay:.06s">
+            <span class="w-12 h-12 rounded-2xl bg-ink/5 grid place-items-center mb-5 group-hover:scale-110 transition-transform">
+              <svg class="w-6 h-6 text-ink/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h11a2 2 0 0 1 2 2v9a2 2 0 0 0 2 2H6a2 2 0 0 1-2-2V6Zm3 4h6M7 14h6m6-5h.5a1.5 1.5 0 0 1 1.5 1.5V17"/></svg>
+            </span>
+            <h3 class="font-display font-bold text-lg mb-2">Buurtnieuws</h3>
+            <p class="text-ink/60 leading-relaxed text-[15px]">Automatisch opgehaald bij de gemeente. Reageren doe je met een emoji &mdash; ❤️, 👍 of 🎉.</p>
+          </article>
+
+          <article class="reveal group bg-white rounded-3xl border border-line shadow-card p-7 hover:-translate-y-1 hover:shadow-lift transition-all duration-300" style="transition-delay:.12s">
+            <span class="w-12 h-12 rounded-2xl bg-primary-tint grid place-items-center mb-5 group-hover:scale-110 transition-transform text-2xl">🪜</span>
+            <h3 class="font-display font-bold text-lg mb-2">Elkaar helpen</h3>
+            <p class="text-ink/60 leading-relaxed text-[15px]">Een boormachine lenen of een hand bij het verhuizen. Tik op <span class="font-semibold text-ink">"Ik help je!"</span> en je bent gekoppeld.</p>
+          </article>
+
+          <article class="reveal group relative bg-primary text-white rounded-3xl shadow-lift p-7 overflow-hidden hover:-translate-y-1 transition-all duration-300" style="transition-delay:.18s">
+            <div class="map-grid absolute inset-0 opacity-20" aria-hidden="true"></div>
+            <div class="relative">
+              <span class="w-12 h-12 rounded-2xl bg-white/15 grid place-items-center mb-5">
+                <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3 4 6v6c0 5 3.4 8.4 8 9 4.6-.6 8-4 8-9V6l-8-3Zm-2 9 2 2 3-4"/></svg>
+              </span>
+              <h3 class="font-display font-bold text-lg mb-2">En altijd: tekstvrij</h3>
+              <p class="text-white/80 leading-relaxed text-[15px]">Alles loopt via knoppen, keuzes en emoji. Geen vrij tekstveld betekent: geen trollen, geen ruzie, geen moderatie nodig.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- NIEUWSBRIEF -->
+    <section id="nieuwsbrief" class="relative py-20 sm:py-28 scroll-mt-24">
+      <div class="map-grid absolute inset-0 -z-10 opacity-60" aria-hidden="true"></div>
+      <div class="max-w-6xl mx-auto px-4 grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <div class="reveal order-2 lg:order-1">
+          <p class="eyebrow inline-flex items-center gap-2 text-[12px] text-accent-dark mb-4">
+            <span class="w-6 h-px bg-accent"></span> De Wekelijkse BuurtBabbel
+          </p>
+          <h2 class="font-display font-extrabold text-3xl sm:text-[2.6rem] leading-[1.1] tracking-tight">Elke vrijdag om 16:00 jouw buurt in je inbox.</h2>
+          <p class="mt-5 text-lg text-ink/65 leading-relaxed">Geen zin om de app dagelijks te checken? Dat hoeft ook niet. De Wekelijkse BuurtBabbel is een volledig automatische samenvatting van de leukste activiteiten, het gedeelde eten en het belangrijkste nieuws. Eén mailtje, helemaal bij.</p>
+          <ul class="mt-7 space-y-3.5">
+            <li class="flex items-center gap-3"><span class="w-7 h-7 rounded-lg bg-mint-tint grid place-items-center shrink-0"><svg class="w-4 h-4 text-mint-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="m5 13 4 4L19 7"/></svg></span><span class="text-ink/75">De populairste activiteiten van de week</span></li>
+            <li class="flex items-center gap-3"><span class="w-7 h-7 rounded-lg bg-mint-tint grid place-items-center shrink-0"><svg class="w-4 h-4 text-mint-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="m5 13 4 4L19 7"/></svg></span><span class="text-ink/75">Gemeentenieuws, kort samengevat</span></li>
+            <li class="flex items-center gap-3"><span class="w-7 h-7 rounded-lg bg-mint-tint grid place-items-center shrink-0"><svg class="w-4 h-4 text-mint-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="m5 13 4 4L19 7"/></svg></span><span class="text-ink/75">100% automatisch &mdash; geschreven door niemand, gelezen door iedereen</span></li>
+          </ul>
+        </div>
+
+        <!-- e-mail mock -->
+        <div class="reveal order-1 lg:order-2">
+          <div class="relative max-w-md mx-auto">
+            <div class="absolute -inset-3 bg-accent-tint rounded-[2rem] -rotate-2" aria-hidden="true"></div>
+            <div class="relative bg-white rounded-3xl border border-line shadow-card overflow-hidden">
+              <div class="px-5 py-3.5 border-b border-line flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full bg-accent/60"></span>
+                <span class="w-3 h-3 rounded-full bg-[#FFC83D]"></span>
+                <span class="w-3 h-3 rounded-full bg-mint/70"></span>
+                <span class="ml-2 text-xs font-mono text-ink/40">Postvak IN</span>
+              </div>
+              <div class="px-5 pt-5">
+                <div class="flex items-center gap-3 pb-4 border-b border-line">
+                  <span class="w-11 h-11 rounded-xl bg-primary grid place-items-center text-white font-display font-bold">BB</span>
+                  <div class="min-w-0">
+                    <p class="font-display font-bold text-sm leading-tight">Wekelijkse BuurtBabbel</p>
+                    <p class="text-xs text-ink/45 font-mono truncate">vrijdag@buurtbabbel.nl &middot; 16:00</p>
+                  </div>
+                  <span class="ml-auto text-[11px] text-ink/40">vr</span>
+                </div>
+                <p class="font-display font-extrabold text-lg mt-4">Deze week in De Pijp 👋</p>
+                <p class="text-sm text-ink/55 mt-1">Hoi buurtgenoot, dit speelde er deze week bij jou om de hoek:</p>
+              </div>
+              <div class="p-5 space-y-2.5">
+                <div class="flex items-center gap-3 bg-primary-tint rounded-xl p-3">
+                  <span class="text-lg">🏃</span>
+                  <div class="min-w-0"><p class="text-sm font-semibold leading-tight">Hardlopen &mdash; 23 deelnemers</p><p class="text-xs text-ink/50">Meest populaire activiteit</p></div>
+                </div>
+                <div class="flex items-center gap-3 bg-mint-tint rounded-xl p-3">
+                  <span class="text-lg">🍲</span>
+                  <div class="min-w-0"><p class="text-sm font-semibold leading-tight">12 maaltijden gedeeld</p><p class="text-xs text-ink/50">0 keer iets weggegooid</p></div>
+                </div>
+                <div class="flex items-center gap-3 bg-accent-tint rounded-xl p-3">
+                  <span class="text-lg">📰</span>
+                  <div class="min-w-0"><p class="text-sm font-semibold leading-tight">Sarphatipark krijgt nieuwe speeltuin</p><p class="text-xs text-ink/50">47 buren reageerden</p></div>
+                </div>
+              </div>
+              <div class="px-5 pb-5">
+                <div class="text-center text-[11px] text-ink/40 font-mono border-t border-line pt-3">Automatisch samengesteld &middot; geen spam &middot; uitschrijven met 1 tik</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRIVACY -->
+    <section class="py-20 sm:py-28">
+      <div class="max-w-6xl mx-auto px-4">
+        <div class="reveal text-center max-w-2xl mx-auto mb-14">
+          <p class="eyebrow inline-flex items-center gap-2 text-[12px] text-mint-dark mb-4 justify-center">
+            <span class="w-6 h-px bg-mint"></span> Privacy &amp; veiligheid <span class="w-6 h-px bg-mint"></span>
+          </p>
+          <h2 class="font-display font-extrabold text-3xl sm:text-[2.6rem] leading-[1.1] tracking-tight">Veilig dichtbij, zonder je leven te delen.</h2>
+          <p class="mt-5 text-lg text-ink/65 leading-relaxed">Een buurt-app hoort om vertrouwen te draaien, niet om data. Daarom houden we het bewust klein.</p>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div class="reveal bg-white rounded-3xl border border-line shadow-card p-6">
+            <span class="w-11 h-11 rounded-xl bg-mint-tint grid place-items-center mb-4"><svg class="w-5 h-5 text-mint-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21s7-5.7 7-11a7 7 0 1 0-14 0c0 5.3 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg></span>
+            <h3 class="font-display font-bold mb-1.5">Alleen je postcode</h3>
+            <p class="text-sm text-ink/60 leading-relaxed">Geen volledig adres, geen openbaar profiel. We weten in welke buurt je zit, meer niet.</p>
+          </div>
+          <div class="reveal bg-white rounded-3xl border border-line shadow-card p-6" style="transition-delay:.06s">
+            <span class="w-11 h-11 rounded-xl bg-primary-tint grid place-items-center mb-4"><svg class="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M7 11V8a5 5 0 0 1 10 0v3m-12 0h14a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1Z"/></svg></span>
+            <h3 class="font-display font-bold mb-1.5">Jij houdt de regie</h3>
+            <p class="text-sm text-ink/60 leading-relaxed">Contact ontstaat pas na een wederzijds zwaaitje. Niemand kan je zomaar berichten.</p>
+          </div>
+          <div class="reveal bg-white rounded-3xl border border-line shadow-card p-6" style="transition-delay:.12s">
+            <span class="w-11 h-11 rounded-xl bg-accent-tint grid place-items-center mb-4"><svg class="w-5 h-5 text-accent-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" stroke-linejoin="round" d="M5.6 5.6 18.4 18.4"/></svg></span>
+            <h3 class="font-display font-bold mb-1.5">Geen advertenties</h3>
+            <p class="text-sm text-ink/60 leading-relaxed">We verkopen geen data en tonen geen reclame. BuurtBabbel draait op een vrijwillige buurtbijdrage.</p>
+          </div>
+          <div class="reveal bg-white rounded-3xl border border-line shadow-card p-6" style="transition-delay:.18s">
+            <span class="w-11 h-11 rounded-xl bg-mint-tint grid place-items-center mb-4"><svg class="w-5 h-5 text-mint-dark" viewBox="0 0 24 24" fill="currentColor"><path d="M19.05 4.91A9.82 9.82 0 0 0 12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.91-7.02ZM12.05 20.2a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 1 1 7.18 4.06Z"/></svg></span>
+            <h3 class="font-display font-bold mb-1.5">Verbinden via WhatsApp</h3>
+            <p class="text-sm text-ink/60 leading-relaxed">Geen apart chatsysteem dat je moet checken. Een match opent gewoon WhatsApp.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section class="relative py-20 sm:py-28 bg-white border-y border-line">
+      <div class="max-w-6xl mx-auto px-4">
+        <div class="reveal max-w-2xl mb-14">
+          <p class="eyebrow inline-flex items-center gap-2 text-[12px] text-primary mb-4">
+            <span class="pin pin-primary"><span class="pin-dot !w-2.5 !h-2.5"></span></span> Uit de buurt
+          </p>
+          <h2 class="font-display font-extrabold text-3xl sm:text-[2.6rem] leading-[1.1] tracking-tight">Buren die elkaar weer kennen.</h2>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-5">
+          <figure class="reveal bg-paper rounded-3xl border border-line p-7 flex flex-col">
+            <div class="flex gap-0.5 text-accent mb-4" aria-label="5 van 5 sterren">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 2.9 6.3 6.9.7-5.1 4.6 1.4 6.7L12 17.3 5.9 20.3l1.4-6.7L2.2 9l6.9-.7L12 2Z"/></svg>
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 2.9 6.3 6.9.7-5.1 4.6 1.4 6.7L12 17.3 5.9 20.3l1.4-6.7L2.2 9l6.9-.7L12 2Z"/></svg>
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 2.9 6.3 6.9.7-5.1 4.6 1.4 6.7L12 17.3 5.9 20.3l1.4-6.7L2.2 9l6.9-.7L12 2Z"/></svg>
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 2.9 6.3 6.9.7-5.1 4.6 1.4 6.7L12 17.3 5.9 20.3l1.4-6.7L2.2 9l6.9-.7L12 2Z"/></svg>
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 2.9 6.3 6.9.7-5.1 4.6 1.4 6.7L12 17.3 5.9 20.3l1.4-6.7L2.2 9l6.9-.7L12 2Z"/></svg>
+            </div>
+            <blockquote class="text-ink/80 leading-relaxed flex-1">&ldquo;Ik ken nu eindelijk de namen van mijn buren. Toen ik griep had, stond er ineens soep voor mijn deur. Dat was nooit gebeurd via de oude appgroep.&rdquo;</blockquote>
+            <figcaption class="flex items-center gap-3 mt-6 pt-5 border-t border-line">
+              <span class="w-10 h-10 rounded-full bg-primary grid place-items-center text-white font-bold">F</span>
+              <div><p class="font-semibold text-sm">Fatima</p><p class="text-xs text-ink/45 font-mono">DE PIJP</p></div>
+            </figcaption>
+          </figure>
+
+          <figure class="reveal bg-paper rounded-3xl border border-line p-7 flex flex-col" style="transition-delay:.08s">
+            <div class="flex gap-0.5 text-accent mb-4" aria-label="5 van 5 sterren">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 2.9 6.3 6.9.7-5.1 4.6 1.4 6.7L12 17.3 5.9 20.3l1.4-6.7L2.2 9l6.9-.7L12 2Z"/></svg>
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 2.9 6.3 6.9.7-5.1 4.6 1.4 6.7L12 17.3 5.9 20.3l1.4-6.7L2.2 9l6.9-.7L12 2Z"/></svg>
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 2.9 6.3 6.9.7-5.1 4.6 1.4 6.7L12 17.3 5.9 20.3l1.4-6.7L2.2 9l6.9-.7L12 2Z"/></svg>
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 2.9 6.3 6.9.7-5.1 4.6 1.4 6.7L12 17.3 5.9 20.3l1.4-6.7L2.2 9l6.9-.7L12 2Z"/></svg>
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 2.9 6.3 6.9.7-5.1 4.6 1.4 6.7L12 17.3 5.9 20.3l1.4-6.7L2.2 9l6.9-.7L12 2Z"/></svg>
+            </div>
+            <blockquote class="text-ink/80 leading-relaxed flex-1">&ldquo;Geen eindeloze groepsapp meer met 200 berichten over niets. Eén tik en mijn boormachine had een nieuwe lener. Zo simpel.&rdquo;</blockquote>
+            <figcaption class="flex items-center gap-3 mt-6 pt-5 border-t border-line">
+              <span class="w-10 h-10 rounded-full bg-accent grid place-items-center text-white font-bold">J</span>
+              <div><p class="font-semibold text-sm">Johan</p><p class="text-xs text-ink/45 font-mono">LOMBOK</p></div>
+            </figcaption>
+          </figure>
+
+          <figure class="reveal bg-paper rounded-3xl border border-line p-7 flex flex-col" style="transition-delay:.16s">
+            <div class="flex gap-0.5 text-accent mb-4" aria-label="5 van 5 sterren">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 2.9 6.3 6.9.7-5.1 4.6 1.4 6.7L12 17.3 5.9 20.3l1.4-6.7L2.2 9l6.9-.7L12 2Z"/></svg>
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 2.9 6.3 6.9.7-5.1 4.6 1.4 6.7L12 17.3 5.9 20.3l1.4-6.7L2.2 9l6.9-.7L12 2Z"/></svg>
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 2.9 6.3 6.9.7-5.1 4.6 1.4 6.7L12 17.3 5.9 20.3l1.4-6.7L2.2 9l6.9-.7L12 2Z"/></svg>
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 2.9 6.3 6.9.7-5.1 4.6 1.4 6.7L12 17.3 5.9 20.3l1.4-6.7L2.2 9l6.9-.7L12 2Z"/></svg>
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 2.9 6.3 6.9.7-5.1 4.6 1.4 6.7L12 17.3 5.9 20.3l1.4-6.7L2.2 9l6.9-.7L12 2Z"/></svg>
+            </div>
+            <blockquote class="text-ink/80 leading-relaxed flex-1">&ldquo;Mijn moeder van 74 durft dit wél te gebruiken. Geen ingewikkeld typen, gewoon op een knop drukken. Nu loopt ze elke week met iemand.&rdquo;</blockquote>
+            <figcaption class="flex items-center gap-3 mt-6 pt-5 border-t border-line">
+              <span class="w-10 h-10 rounded-full bg-mint grid place-items-center text-white font-bold">S</span>
+              <div><p class="font-semibold text-sm">Sanne</p><p class="text-xs text-ink/45 font-mono">ZEEHELDENBUURT</p></div>
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="vragen" class="py-20 sm:py-28 scroll-mt-24">
+      <div class="max-w-3xl mx-auto px-4">
+        <div class="reveal text-center mb-12">
+          <p class="eyebrow inline-flex items-center gap-2 text-[12px] text-primary mb-4 justify-center">
+            <span class="w-6 h-px bg-primary"></span> Veelgestelde vragen <span class="w-6 h-px bg-primary"></span>
+          </p>
+          <h2 class="font-display font-extrabold text-3xl sm:text-[2.6rem] leading-[1.1] tracking-tight">Goeie vraag.</h2>
+        </div>
+
+        <div id="faq" class="reveal space-y-3">
+          <div class="faq-item bg-white rounded-2xl border border-line overflow-hidden">
+            <button type="button" class="faq-trigger w-full flex items-center justify-between gap-4 text-left px-5 py-4" aria-expanded="false">
+              <span class="font-display font-bold text-ink">Is BuurtBabbel gratis?</span>
+              <span class="faq-icon shrink-0 w-7 h-7 rounded-full bg-primary-tint grid place-items-center text-primary"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" d="M12 5v14M5 12h14"/></svg></span>
+            </button>
+            <div class="faq-panel"><p class="px-5 pb-5 text-ink/65 leading-relaxed">Ja. Meedoen, activiteiten vinden en buren ontmoeten is helemaal gratis. We draaien op een vrijwillige buurtbijdrage in plaats van advertenties, dus je betaalt nooit verplicht.</p></div>
+          </div>
+
+          <div class="faq-item bg-white rounded-2xl border border-line overflow-hidden">
+            <button type="button" class="faq-trigger w-full flex items-center justify-between gap-4 text-left px-5 py-4" aria-expanded="false">
+              <span class="font-display font-bold text-ink">Kan ik echt helemaal niets typen?</span>
+              <span class="faq-icon shrink-0 w-7 h-7 rounded-full bg-primary-tint grid place-items-center text-primary"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" d="M12 5v14M5 12h14"/></svg></span>
+            </button>
+            <div class="faq-panel"><p class="px-5 pb-5 text-ink/65 leading-relaxed">Klopt, en dat is precies de bedoeling. Je communiceert via knoppen, kant-en-klare keuzes en emoji. Geen vrij tekstveld betekent geen scheldpartijen, geen eindeloze discussies en geen moderatie. Wil je écht iemand spreken? Dan opent na een match gewoon WhatsApp.</p></div>
+          </div>
+
+          <div class="faq-item bg-white rounded-2xl border border-line overflow-hidden">
+            <button type="button" class="faq-trigger w-full flex items-center justify-between gap-4 text-left px-5 py-4" aria-expanded="false">
+              <span class="font-display font-bold text-ink">Hoe werkt de WhatsApp-koppeling?</span>
+              <span class="faq-icon shrink-0 w-7 h-7 rounded-full bg-primary-tint grid place-items-center text-primary"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" d="M12 5v14M5 12h14"/></svg></span>
+            </button>
+            <div class="faq-panel"><p class="px-5 pb-5 text-ink/65 leading-relaxed">Pas als jullie allebei een zwaaitje hebben gestuurd, maakt BuurtBabbel een match. Dan opent er een WhatsApp-chat met een kant-en-klaar berichtje dat je alleen nog hoeft te versturen. Je telefoonnummer wordt nooit zomaar zichtbaar voor de hele buurt.</p></div>
+          </div>
+
+          <div class="faq-item bg-white rounded-2xl border border-line overflow-hidden">
+            <button type="button" class="faq-trigger w-full flex items-center justify-between gap-4 text-left px-5 py-4" aria-expanded="false">
+              <span class="font-display font-bold text-ink">Wat doen jullie met mijn gegevens?</span>
+              <span class="faq-icon shrink-0 w-7 h-7 rounded-full bg-primary-tint grid place-items-center text-primary"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" d="M12 5v14M5 12h14"/></svg></span>
+            </button>
+            <div class="faq-panel"><p class="px-5 pb-5 text-ink/65 leading-relaxed">Zo min mogelijk. We bewaren je postcode en e-mailadres om je aan de juiste buurt te koppelen. Geen volledig adres, geen openbaar profiel, geen verkoop aan derden en geen advertentienetwerken. Punt.</p></div>
+          </div>
+
+          <div class="faq-item bg-white rounded-2xl border border-line overflow-hidden">
+            <button type="button" class="faq-trigger w-full flex items-center justify-between gap-4 text-left px-5 py-4" aria-expanded="false">
+              <span class="font-display font-bold text-ink">In welke buurten werkt het al?</span>
+              <span class="faq-icon shrink-0 w-7 h-7 rounded-full bg-primary-tint grid place-items-center text-primary"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" d="M12 5v14M5 12h14"/></svg></span>
+            </button>
+            <div class="faq-panel"><p class="px-5 pb-5 text-ink/65 leading-relaxed">We draaien een besloten pilot in De Pijp (Amsterdam), Lombok (Utrecht) en de Zeeheldenbuurt (Den Haag). Nieuwe buurten openen zodra er genoeg buren op de wachtlijst staan. Vul je postcode in en we geven een seintje zodra die van jou aan de beurt is.</p></div>
+          </div>
+
+          <div class="faq-item bg-white rounded-2xl border border-line overflow-hidden">
+            <button type="button" class="faq-trigger w-full flex items-center justify-between gap-4 text-left px-5 py-4" aria-expanded="false">
+              <span class="font-display font-bold text-ink">Wat als niemand reageert?</span>
+              <span class="faq-icon shrink-0 w-7 h-7 rounded-full bg-primary-tint grid place-items-center text-primary"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" d="M12 5v14M5 12h14"/></svg></span>
+            </button>
+            <div class="faq-panel"><p class="px-5 pb-5 text-ink/65 leading-relaxed">Dat gebeurt zelden, want het automatische buurtnieuws en de wekelijkse digest zorgen dat er altijd iets te doen is. En omdat meedoen één tik kost, is de drempel voor je buren minimaal &mdash; veel lager dan een berichtje typen in een groepsapp.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EIND CTA -->
+    <section class="pb-8 sm:pb-12">
+      <div class="max-w-6xl mx-auto px-4">
+        <div class="reveal relative overflow-hidden rounded-[2.5rem] bg-primary text-white px-6 py-14 sm:px-12 sm:py-16 shadow-lift">
+          <div class="map-grid absolute inset-0 opacity-20" aria-hidden="true"></div>
+          <div class="absolute -top-16 -right-10 w-72 h-72 rounded-full bg-accent/30 blur-3xl" aria-hidden="true"></div>
+          <div class="absolute -bottom-20 -left-10 w-72 h-72 rounded-full bg-mint/20 blur-3xl" aria-hidden="true"></div>
+
+          <div class="relative max-w-2xl mx-auto text-center">
+            <span class="inline-flex items-center gap-2 eyebrow text-[11px] text-white/80 bg-white/10 rounded-full px-4 py-1.5 mb-6">
+              <span class="w-1.5 h-1.5 rounded-full bg-mint"></span> Plek vrij in jouw buurt
+            </span>
+            <h2 class="font-display font-extrabold text-3xl sm:text-[2.8rem] leading-[1.08] tracking-tight">Klaar om je buurt écht te leren kennen?</h2>
+            <p class="mt-5 text-lg text-white/75">Zet jezelf op de kaart. Vul je postcode in en ontdek wat er bij jou om de hoek leeft &mdash; geen wachtrij, geen gedoe.</p>
+
+            <form id="footer-form" class="lead-form mt-9 max-w-xl mx-auto" novalidate>
+              <div class="form-shell flex flex-col sm:flex-row gap-2.5 p-2 bg-white rounded-2xl shadow-card text-ink">
+                <div class="flex-1 flex items-center gap-2 px-3">
+                  <svg class="w-5 h-5 text-ink/30 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5 12 13l9-5.5M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z"/></svg>
+                  <label for="footer-email" class="sr-only">Je e-mailadres</label>
+                  <input type="email" id="footer-email" name="email" placeholder="Je e-mailadres" required autocomplete="email" class="w-full py-3 bg-transparent placeholder:text-ink/40 focus:outline-none" />
+                </div>
+                <div class="flex items-center gap-2 px-3 sm:border-l border-line sm:w-44">
+                  <svg class="w-5 h-5 text-ink/30 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C7.86 2 4.5 5.36 4.5 9.5c0 5.25 6.2 11.4 7.04 12.2a.66.66 0 0 0 .92 0c.84-.8 7.04-6.95 7.04-12.2C19.5 5.36 16.14 2 12 2Zm0 9.75A2.25 2.25 0 1 1 12 7.25a2.25 2.25 0 0 1 0 4.5Z"/></svg>
+                  <label for="footer-postcode" class="sr-only">Je postcode</label>
+                  <input type="text" id="footer-postcode" name="postcode" placeholder="1234 AB" required maxlength="7" autocomplete="postal-code" class="w-full py-3 bg-transparent placeholder:text-ink/40 focus:outline-none font-mono uppercase tracking-wider" />
+                </div>
+                <button type="submit" class="btn font-display font-bold px-6 py-3.5 rounded-xl whitespace-nowrap bg-ink text-white hover:bg-ink/90">Ontdek mijn buurt</button>
+              </div>
+              <p class="form-error hidden text-sm text-white font-medium mt-2 bg-accent-dark/80 rounded-lg px-3 py-1.5 inline-block"></p>
+            </form>
+
+            <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+              <a href="#" class="btn group inline-flex items-center gap-3 bg-white text-ink rounded-xl pl-3.5 pr-5 py-2.5 hover:-translate-y-0.5 hover:shadow-lg">
+                <svg class="w-7 h-7" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+                <span class="text-left leading-none"><span class="block text-[10px] opacity-60 mb-0.5">Download in de</span><span class="block text-sm font-semibold">App Store</span></span>
+              </a>
+              <a href="#" class="btn group inline-flex items-center gap-3 bg-white text-ink rounded-xl pl-3.5 pr-5 py-2.5 hover:-translate-y-0.5 hover:shadow-lg">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M3.6 1.8 13.8 12 3.6 22.2a2 2 0 0 1-.6-1.4V3.2a2 2 0 0 1 .6-1.4Zm11.3 6.4 2.9 1.7a2 2 0 0 1 0 3.4l-2.9 1.7L11.4 12l3.5-3.8ZM5 .9l9 5.2-2.6 2.8L5 .9Zm0 22.2 6.4-8 2.6 2.8L5 23.1Z"/></svg>
+                <span class="text-left leading-none"><span class="block text-[10px] opacity-60 mb-0.5">Ontdek het op</span><span class="block text-sm font-semibold">Google Play</span></span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-ink text-white/70">
+    <div class="max-w-6xl mx-auto px-4 py-14">
+      <div class="grid md:grid-cols-[1.5fr_1fr_1fr_1fr] gap-10">
+        <div>
+          <a href="#hero" class="flex items-center gap-2.5 mb-4">
+            <span class="w-9 h-9 rounded-xl bg-primary grid place-items-center">
+              <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C7.86 2 4.5 5.36 4.5 9.5c0 5.25 6.2 11.4 7.04 12.2a.66.66 0 0 0 .92 0c.84-.8 7.04-6.95 7.04-12.2C19.5 5.36 16.14 2 12 2Zm0 9.75A2.25 2.25 0 1 1 12 7.25a2.25 2.25 0 0 1 0 4.5Z"/></svg>
+            </span>
+            <span class="font-display font-extrabold text-lg text-white">Buurt<span class="text-primary-light">Babbel</span></span>
+          </a>
+          <p class="text-sm leading-relaxed max-w-xs">De positieve buurt-app zonder tekstveld. Tik, zwaai en ontmoet de mensen die het dichtst bij je wonen.</p>
+          <div class="flex gap-2.5 mt-5">
+            <a href="#" aria-label="Instagram" class="w-9 h-9 rounded-lg bg-white/10 hover:bg-white/20 grid place-items-center transition-colors"><svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="3.5"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></a>
+            <a href="#" aria-label="LinkedIn" class="w-9 h-9 rounded-lg bg-white/10 hover:bg-white/20 grid place-items-center transition-colors"><svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="currentColor"><path d="M6.94 6.5A1.94 1.94 0 1 1 3.06 6.5a1.94 1.94 0 0 1 3.88 0ZM3.4 8.9h3.1V21H3.4V8.9Zm5.06 0h2.97v1.65h.04c.41-.78 1.42-1.6 2.93-1.6 3.13 0 3.71 2.06 3.71 4.74V21h-3.1v-5.36c0-1.28-.02-2.92-1.78-2.92-1.78 0-2.05 1.39-2.05 2.83V21h-3.1V8.9Z"/></svg></a>
+            <a href="#" aria-label="Mastodon" class="w-9 h-9 rounded-lg bg-white/10 hover:bg-white/20 grid place-items-center transition-colors"><svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="currentColor"><path d="M21.3 8.4c0-3.6-2.4-4.6-2.4-4.6C17.7 3.2 15.6 3 13.5 3h-.05c-2.1 0-4.2.2-5.4.8 0 0-2.4 1-2.4 4.6 0 .8-.02 1.8.01 2.86.08 3.56.65 7.07 4.5 8.06 1.78.46 3.3.56 4.53.49 2.23-.12 3.48-.74 3.48-.74l-.07-1.55s-1.59.46-3.38.4c-1.77-.06-3.64-.18-3.93-2.27a4.5 4.5 0 0 1-.04-.6s1.74.4 3.95.5c1.35.07 2.62-.08 3.91-.23 2.48-.29 4.64-1.83 4.91-3.23.43-2.2.4-4.39.4-4.39ZM18 13.4h-1.9V8.78c0-.97-.42-1.47-1.25-1.47-.92 0-1.38.58-1.38 1.74v2.52h-1.9V9.05c0-1.16-.46-1.74-1.38-1.74-.83 0-1.25.5-1.25 1.47v4.62H5V8.64c0-.97.25-1.74.74-2.31.51-.57 1.18-.86 2.01-.86.96 0 1.69.36 2.18 1.1l.47.79.47-.79c.49-.74 1.22-1.1 2.18-1.1.83 0 1.5.29 2.01.86.49.57.74 1.34.74 2.31v4.76Z"/></svg></a>
+          </div>
+        </div>
+
+        <div>
+          <p class="font-display font-bold text-white text-sm mb-4">Product</p>
+          <ul class="space-y-2.5 text-sm">
+            <li><a href="#hoe" class="hover:text-white transition-colors">Zo werkt het</a></li>
+            <li><a href="#functies" class="hover:text-white transition-colors">Functies</a></li>
+            <li><a href="#preview" class="hover:text-white transition-colors">Live preview</a></li>
+            <li><a href="#nieuwsbrief" class="hover:text-white transition-colors">Nieuwsbrief</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <p class="font-display font-bold text-white text-sm mb-4">Buurt</p>
+          <ul class="space-y-2.5 text-sm">
+            <li><a href="#" class="hover:text-white transition-colors">Pilot-buurten</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Word ambassadeur</a></li>
+            <li><a href="#vragen" class="hover:text-white transition-colors">Veelgestelde vragen</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Contact</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <p class="font-display font-bold text-white text-sm mb-4">Juridisch</p>
+          <ul class="space-y-2.5 text-sm">
+            <li><a href="#" class="hover:text-white transition-colors">Privacy</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Voorwaarden</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Cookies</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="mt-12 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm">
+        <p>&copy; 2026 BuurtBabbel. Alle rechten voorbehouden.</p>
+        <p class="inline-flex items-center gap-1.5 text-white/50">Met aandacht gemaakt in Nederland <span class="text-accent">&hearts;</span></p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    /* ---------- Validatie ---------- */
+    const POSTCODE_RE = /^\d{4}\s?[A-Za-z]{2}$/;
+    const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const isEmail = (v) => EMAIL_RE.test(v.trim());
+    const isPostcode = (v) => POSTCODE_RE.test(v.trim());
+    function formatPostcode(v) {
+      const c = v.replace(/\s/g, '').toUpperCase();
+      return c.length >= 5 ? c.slice(0, 4) + ' ' + c.slice(4, 6) : c;
+    }
+
+    /* ---------- Toast ---------- */
+    let toastTimer;
+    function showToast(title, message) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-title').textContent = title;
+      document.getElementById('toast-message').textContent = message;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 4500);
+    }
+
+    /* ---------- Formulieren ---------- */
+    function handleSubmit(e) {
+      e.preventDefault();
+      const form = e.target;
+      const email = form.querySelector('[name="email"]');
+      const postcode = form.querySelector('[name="postcode"]');
+      const error = form.querySelector('.form-error');
+
+      const wrap = (el) => el.closest('.flex.items-center, .flex-1') || el.parentElement;
+      [email, postcode].forEach((el) => wrap(el).classList.remove('ring-2', 'ring-accent', 'rounded-xl'));
+      if (error) error.classList.add('hidden');
+
+      const showError = (el, msg) => {
+        const w = wrap(el);
+        w.classList.add('ring-2', 'ring-accent', 'rounded-xl');
+        if (error) { error.textContent = msg; error.classList.remove('hidden'); }
+        el.focus();
+      };
+
+      if (!isEmail(email.value)) return showError(email, 'Vul een geldig e-mailadres in.');
+      const pc = formatPostcode(postcode.value);
+      if (!isPostcode(pc)) return showError(postcode, 'Vul een geldige postcode in (bijv. 1234 AB).');
+
+      form.reset();
+      showToast('Op de kaart gezet!', `We sturen een seintje zodra ${pc} live gaat. Hou je inbox in de gaten.`);
+    }
+
+    document.querySelectorAll('.lead-form').forEach((f) => f.addEventListener('submit', handleSubmit));
+    document.querySelectorAll('[name="postcode"]').forEach((input) => {
+      input.addEventListener('input', () => { input.value = formatPostcode(input.value); });
+    });
+
+    /* ---------- Mobiel menu ---------- */
+    const menuBtn = document.getElementById('menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    menuBtn.addEventListener('click', () => {
+      const open = mobileMenu.classList.toggle('hidden');
+      menuBtn.setAttribute('aria-expanded', String(!open));
+    });
+    mobileMenu.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => {
+      mobileMenu.classList.add('hidden');
+      menuBtn.setAttribute('aria-expanded', 'false');
+    }));
+
+    /* ---------- Scroll reveal ---------- */
+    const revealEls = document.querySelectorAll('.reveal');
+    if (prefersReduced) {
+      revealEls.forEach((el) => el.classList.add('in'));
+    } else {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) { entry.target.classList.add('in'); io.unobserve(entry.target); }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -48px 0px' });
+      revealEls.forEach((el) => io.observe(el));
+    }
+
+    /* ---------- Count-up ---------- */
+    function countUp(el) {
+      const target = parseInt(el.dataset.count, 10);
+      const suffix = el.dataset.suffix || '';
+      if (prefersReduced) { el.textContent = target.toLocaleString('nl-NL') + suffix; return; }
+      const dur = 1400; const start = performance.now();
+      function tick(now) {
+        const p = Math.min((now - start) / dur, 1);
+        const eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(target * eased).toLocaleString('nl-NL') + suffix;
+        if (p < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }
+    const counters = document.querySelectorAll('[data-count]');
+    const cio = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) { countUp(entry.target); cio.unobserve(entry.target); }
+      });
+    }, { threshold: 0.6 });
+    counters.forEach((el) => cio.observe(el));
+
+    /* ---------- FAQ accordion ---------- */
+    const faqItems = document.querySelectorAll('#faq .faq-item');
+    faqItems.forEach((item) => {
+      const trigger = item.querySelector('.faq-trigger');
+      const panel = item.querySelector('.faq-panel');
+      trigger.addEventListener('click', () => {
+        const isOpen = item.classList.contains('faq-open');
+        faqItems.forEach((other) => {
+          other.classList.remove('faq-open');
+          other.querySelector('.faq-trigger').setAttribute('aria-expanded', 'false');
+          other.querySelector('.faq-panel').style.maxHeight = null;
+        });
+        if (!isOpen) {
+          item.classList.add('faq-open');
+          trigger.setAttribute('aria-expanded', 'true');
+          panel.style.maxHeight = panel.scrollHeight + 'px';
+        }
+      });
+    });
+
+    /* ---------- Interactieve preview ---------- */
+    // 1. Buurtactiviteit
+    (function () {
+      let count = 8, joined = false;
+      const btn = document.getElementById('btn-activity');
+      const num = document.getElementById('activity-num');
+      btn.addEventListener('click', () => {
+        joined = !joined;
+        count += joined ? 1 : -1;
+        num.textContent = count;
+        if (joined) {
+          btn.textContent = '\u2713 Je doet mee!';
+          btn.classList.remove('btn-primary');
+          btn.classList.add('bg-mint', 'text-white');
+        } else {
+          btn.textContent = 'Ik ben erbij!';
+          btn.classList.add('btn-primary');
+          btn.classList.remove('bg-mint', 'text-white');
+        }
+        if (!prefersReduced) { num.classList.add('animate-pop'); setTimeout(() => num.classList.remove('animate-pop'), 400); }
+      });
+    })();
+
+    // 2. Eten delen
+    (function () {
+      let portions = 3;
+      const btn = document.getElementById('btn-food');
+      const num = document.getElementById('food-num');
+      const count = document.getElementById('food-count');
+      btn.addEventListener('click', () => {
+        if (portions <= 0) return;
+        portions--;
+        if (portions === 0) {
+          count.textContent = 'Op! Alle porties zijn vergeven \uD83D\uDE4C';
+          btn.textContent = 'Helaas, op!';
+          btn.disabled = true;
+          btn.classList.add('opacity-50', 'cursor-not-allowed');
+        } else {
+          num.textContent = portions;
+          if (!prefersReduced) { num.classList.add('animate-pop'); setTimeout(() => num.classList.remove('animate-pop'), 400); }
+        }
+      });
+    })();
+
+    // 3. Zin in een praatje
+    (function () {
+      const btn = document.getElementById('btn-wave');
+      const card = document.getElementById('card-chat');
+      const content = document.getElementById('chat-content');
+      btn.addEventListener('click', () => {
+        card.classList.add('border-mint', 'bg-mint-tint');
+        content.innerHTML = `
+          <div class="flex items-center gap-3">
+            <span class="w-10 h-10 rounded-xl bg-mint grid place-items-center text-white shrink-0">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m5 13 4 4L19 7"/></svg>
+            </span>
+            <div>
+              <p class="font-semibold text-sm text-mint-dark leading-tight">Zwaaitje verstuurd!</p>
+              <p class="text-xs text-ink/55 mt-0.5">Match gemaakt \u00b7 we openen WhatsApp met Anja</p>
+            </div>
+          </div>`;
+      });
+    })();
+
+    // 4. Emoji-reacties
+    (function () {
+      const counts = { heart: 24, thumbs: 18, party: 11 };
+      document.querySelectorAll('.emoji-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const key = btn.dataset.emoji;
+          counts[key]++;
+          const c = btn.querySelector('.emoji-count');
+          c.textContent = counts[key];
+          btn.classList.add('ring-2', 'ring-primary/40');
+          if (!prefersReduced) { c.classList.add('animate-pop'); }
+          setTimeout(() => { c.classList.remove('animate-pop'); btn.classList.remove('ring-2', 'ring-primary/40'); }, 400);
+        });
+      });
+    })();
+
+    // 5. Elkaar helpen
+    (function () {
+      const btn = document.getElementById('btn-help');
+      const card = document.getElementById('card-help');
+      const content = document.getElementById('help-content');
+      btn.addEventListener('click', () => {
+        card.classList.add('border-primary', 'bg-primary-tint');
+        content.innerHTML = `
+          <div class="flex items-center gap-3">
+            <span class="w-10 h-10 rounded-xl bg-primary grid place-items-center text-white shrink-0 text-lg">\uD83E\uDD1D</span>
+            <div>
+              <p class="font-semibold text-sm text-primary leading-tight">Je helpt Kees!</p>
+              <p class="text-xs text-ink/55 mt-0.5">WhatsApp staat klaar \u00b7 spreek samen een tijdstip af</p>
+            </div>
+          </div>`;
+      });
+    })();
+
+    /* ---------- Nav-schaduw bij scroll ---------- */
+    const nav = document.querySelector('header nav');
+    const onScroll = () => {
+      if (window.scrollY > 12) nav.classList.add('shadow-lift');
+      else nav.classList.remove('shadow-lift');
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+  </script>
+</body>
+</html>
