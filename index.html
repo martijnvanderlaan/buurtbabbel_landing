@@ -4,8 +4,30 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script>document.documentElement.classList.add('js');</script>
-  <meta name="description" content="BuurtBabbel houdt je op de hoogte van wat er speelt in je buurt - gemeentenieuws, werkzaamheden en activiteiten - en helpt je je buren leren kennen. Op postcode, in de app en elke week in je mail." />
-  <title>BuurtBabbel - Weet wat er speelt in je buurt, en wie er woont</title>
+  <meta name="description" content="BuurtBabbel verzamelt het nieuws uit je buurt: gemeente, werkzaamheden en activiteiten. En je leert er meteen je buren bij kennen. Op postcode, in de app en elke vrijdag in je mail." />
+  <title>BuurtBabbel · Weet wat er speelt in je buurt</title>
+
+  <link rel="canonical" href="https://martijnvanderlaan.github.io/buurtbabbel_landing/" />
+  <meta name="theme-color" content="#15663C" />
+
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="apple-touch-icon" href="favicon.svg" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="nl_NL" />
+  <meta property="og:site_name" content="BuurtBabbel" />
+  <meta property="og:url" content="https://martijnvanderlaan.github.io/buurtbabbel_landing/" />
+  <meta property="og:title" content="Weet wat er speelt in je buurt" />
+  <meta property="og:description" content="Gemeentenieuws, werkzaamheden en activiteiten uit je eigen buurt. En je leert er meteen je buren bij kennen." />
+  <meta property="og:image" content="https://martijnvanderlaan.github.io/buurtbabbel_landing/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="BuurtBabbel - buurtnieuws en je buren in één app" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Weet wat er speelt in je buurt" />
+  <meta name="twitter:description" content="Gemeentenieuws, werkzaamheden en activiteiten uit je eigen buurt. En je leert er meteen je buren bij kennen." />
+  <meta name="twitter:image" content="https://martijnvanderlaan.github.io/buurtbabbel_landing/og-image.png" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -24,9 +46,9 @@
           colors: {
             ink: '#17241C',
             paper: '#F6F3EC',
-            primary: { DEFAULT: '#15663C', dark: '#0F4F2E', light: '#2F8F5B', tint: '#E7F1EA' },
-            accent: { DEFAULT: '#E0820C', dark: '#B5650A', tint: '#FBEEDC' },
-            clay: { DEFAULT: '#C2683C', dark: '#9E5430', tint: '#F6E9E0' },
+            primary: { DEFAULT: '#15663C', dark: '#0F4F2E', light: '#22A65B', tint: '#DCEFE2' },
+            accent: { DEFAULT: '#ED8B0A', dark: '#B5650A', tint: '#FCEAD2' },
+            clay: { DEFAULT: '#CE6C3C', dark: '#9E5430', tint: '#F6E5DA' },
             line: '#E7E1D4',
           },
           boxShadow: {
@@ -73,7 +95,7 @@
       background-size: 32px 32px;
     }
 
-    .eyebrow { font-family: '"Space Mono"', ui-monospace, monospace; letter-spacing: 0.16em; text-transform: uppercase; }
+    .eyebrow { font-family: '"Space Mono"', ui-monospace, monospace; letter-spacing: 0.02em; }
 
     .glass { background: rgba(246,243,236,0.82); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
 
@@ -82,8 +104,8 @@
     .btn { transition: transform .22s var(--ease-soft), box-shadow .22s ease, background-color .2s ease, color .2s ease; }
     .btn:hover { transform: translateY(-2px); }
     .btn:active { transform: translateY(0) scale(.97); transition-duration: .08s; }
-    .btn-primary { background-color: #15663C; color: #fff; }
-    .btn-primary:hover { background-color: #0F4F2E; box-shadow: 0 16px 34px -12px rgba(21,102,60,.5); }
+    .btn-primary { background-color: #15663C; background-image: linear-gradient(135deg, #1C7A49, #0F4F2E); color: #fff; }
+    .btn-primary:hover { background-image: linear-gradient(135deg, #15663C, #0C4427); box-shadow: 0 16px 34px -12px rgba(21,102,60,.5); }
     .btn-ghost { background-color: #fff; color: #17241C; border: 1px solid #E7E1D4; }
     .btn-ghost:hover { border-color: #15663C; color: #0F4F2E; box-shadow: 0 12px 28px -16px rgba(23,36,28,.3); }
     /* Statische 'binnenkort'-badges niet laten meebewegen */
@@ -210,7 +232,7 @@
   <header class="fixed top-0 inset-x-0 z-50">
     <nav class="glass mx-3 mt-3 md:mx-auto md:max-w-6xl rounded-2xl border border-white/60 shadow-card px-3.5 py-2.5 flex items-center justify-between">
       <a href="#hero" class="flex items-center gap-2.5 group" aria-label="BuurtBabbel home">
-        <span class="relative w-9 h-9 rounded-xl bg-primary grid place-items-center shadow-soft group-hover:scale-105 transition-transform">
+        <span class="relative w-9 h-9 rounded-xl bg-gradient-to-br from-primary-light to-primary grid place-items-center shadow-soft group-hover:scale-105 transition-transform">
           <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C7.86 2 4.5 5.36 4.5 9.5c0 5.25 6.2 11.4 7.04 12.2a.66.66 0 0 0 .92 0c.84-.8 7.04-6.95 7.04-12.2C19.5 5.36 16.14 2 12 2Zm0 9.75A2.25 2.25 0 1 1 12 7.25a2.25 2.25 0 0 1 0 4.5Z"/></svg>
         </span>
         <span class="font-display font-extrabold text-lg tracking-tight">Buurt<span class="text-primary">Babbel</span></span>
@@ -245,8 +267,9 @@
     <section id="hero" class="relative overflow-hidden pt-28 sm:pt-32 pb-16 lg:pb-24">
       <div class="map-grid absolute inset-0 -z-10" aria-hidden="true"></div>
       <div class="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-paper to-transparent -z-10" aria-hidden="true"></div>
-      <div class="absolute -z-10 -top-24 right-[-12%] w-[460px] h-[460px] rounded-full bg-primary-tint blur-3xl opacity-70 animate-drift motion-reduce:animate-none" aria-hidden="true"></div>
-      <div class="absolute -z-10 top-40 left-[-14%] w-[380px] h-[380px] rounded-full bg-accent-tint blur-3xl opacity-60 animate-drift-slow motion-reduce:animate-none" aria-hidden="true"></div>
+      <div class="absolute -z-10 -top-24 right-[-12%] w-[460px] h-[460px] rounded-full bg-primary-light/25 blur-3xl opacity-80 animate-drift motion-reduce:animate-none" aria-hidden="true"></div>
+      <div class="absolute -z-10 top-40 left-[-14%] w-[380px] h-[380px] rounded-full bg-accent/20 blur-3xl opacity-75 animate-drift-slow motion-reduce:animate-none" aria-hidden="true"></div>
+      <div class="absolute -z-10 bottom-0 right-[18%] w-[300px] h-[300px] rounded-full bg-clay/15 blur-3xl opacity-70 animate-drift motion-reduce:animate-none" aria-hidden="true"></div>
 
       <div class="max-w-6xl mx-auto px-4 grid lg:grid-cols-[1.05fr_1fr] gap-12 lg:gap-12 items-center">
         <div data-stagger="90">
@@ -256,8 +279,8 @@
           </p>
 
           <h1 class="reveal font-display font-extrabold text-[2.5rem] leading-[1.06] sm:text-5xl lg:text-[3.5rem] tracking-tight">
-            Weet wat er speelt in je buurt.
-            <span class="relative inline-block text-primary">En wie er woont.
+            Weet wat er speelt in
+            <span class="relative inline-block text-primary">je buurt.
               <svg class="absolute -bottom-2 left-0 w-full" height="14" viewBox="0 0 240 14" fill="none" preserveAspectRatio="none" aria-hidden="true">
                 <path class="underline-swoosh" d="M3 8c40-6 120-7 234-3"/>
               </svg>
@@ -265,29 +288,29 @@
           </h1>
 
           <p class="reveal mt-7 text-lg text-ink/70 leading-relaxed max-w-xl">
-            BuurtBabbel verzamelt automatisch het nieuws van om de hoek &mdash; gemeente, werkzaamheden en wat er te doen is. En het brengt je in contact met de buren die je anders alleen gedag knikt.
+            Gemeentenieuws, werkzaamheden en activiteiten uit je eigen buurt. En je leert meteen je buren kennen.
           </p>
 
           <form id="hero-form" class="reveal lead-form mt-8 max-w-xl" novalidate>
             <div class="form-shell flex flex-col sm:flex-row gap-2.5 p-2 bg-white rounded-2xl border border-line shadow-card">
-              <div class="flex-1 flex items-center gap-2 px-3">
+              <div class="flex-1 min-w-0 flex items-center gap-2 px-3">
                 <svg class="w-5 h-5 text-ink/30 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5 12 13l9-5.5M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z"/></svg>
                 <label for="hero-email" class="sr-only">Je e-mailadres</label>
                 <input type="email" id="hero-email" name="email" placeholder="Je e-mailadres" required autocomplete="email"
                   class="w-full py-3 bg-transparent text-ink placeholder:text-ink/40 focus:outline-none" />
               </div>
-              <div class="flex items-center gap-2 px-3 sm:border-l border-line sm:w-44">
+              <div class="flex items-center gap-2 px-3 sm:border-l border-line sm:w-32">
                 <svg class="w-5 h-5 text-ink/30 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C7.86 2 4.5 5.36 4.5 9.5c0 5.25 6.2 11.4 7.04 12.2a.66.66 0 0 0 .92 0c.84-.8 7.04-6.95 7.04-12.2C19.5 5.36 16.14 2 12 2Zm0 9.75A2.25 2.25 0 1 1 12 7.25a2.25 2.25 0 0 1 0 4.5Z"/></svg>
                 <label for="hero-postcode" class="sr-only">Je postcode</label>
                 <input type="text" id="hero-postcode" name="postcode" placeholder="1234 AB" required maxlength="7" autocomplete="postal-code"
                   class="w-full py-3 bg-transparent text-ink placeholder:text-ink/40 focus:outline-none font-mono uppercase tracking-wider" />
               </div>
-              <button type="submit" class="btn btn-primary font-display font-bold px-6 py-3.5 rounded-xl whitespace-nowrap">
+              <button type="submit" class="btn btn-primary font-display font-bold px-4 py-3.5 rounded-xl whitespace-nowrap">
                 Hou me op de hoogte
               </button>
             </div>
             <p class="form-error hidden text-sm text-accent-dark mt-2 font-medium pl-1"></p>
-            <p class="form-help text-sm text-ink/50 mt-3 pl-1">Gratis. We geven een seintje zodra BuurtBabbel in jouw buurt start &mdash; daarna krijg je elke vrijdag de buurtmail.</p>
+            <p class="form-help text-sm text-ink/50 mt-3 pl-1">Gratis. Je krijgt een seintje zodra BuurtBabbel in jouw buurt start. Daarna elke vrijdag de buurtmail.</p>
           </form>
 
           <div class="reveal mt-8 flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-7">
@@ -320,12 +343,12 @@
         <!-- RIJKE APP-PREVIEW -->
         <div class="reveal zoom-in flex justify-center lg:justify-end" style="transition-delay:.15s">
           <div class="pp-float relative animate-float-slow motion-reduce:animate-none">
-            <div class="absolute -inset-5 bg-gradient-to-br from-primary/15 via-accent/10 to-clay/15 rounded-[3.2rem] blur-2xl opacity-80" aria-hidden="true"></div>
+            <div class="absolute -inset-5 bg-gradient-to-br from-primary/25 via-accent/15 to-clay/20 rounded-[3.2rem] blur-2xl opacity-90" aria-hidden="true"></div>
             <div class="relative bg-[#101A14] rounded-[2.8rem] p-2.5 shadow-2xl w-[300px] sm:w-[332px] ring-1 ring-white/10">
               <div class="absolute top-2.5 left-1/2 -translate-x-1/2 w-28 h-6 bg-[#101A14] rounded-b-2xl z-20"></div>
               <div class="bg-paper text-ink rounded-[2.25rem] overflow-hidden">
                 <!-- status bar -->
-                <div class="flex items-center justify-between px-6 pt-3 pb-1 text-[11px] font-semibold text-ink/70">
+                <div class="flex items-center justify-between px-6 pt-3 pb-1 text-[11px] font-semibold text-ink/70 bg-white">
                   <span class="font-mono">09:41</span>
                   <div class="flex items-center gap-1.5">
                     <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M2 16h3v4H2zM7 11h3v9H7zM12 7h3v13h-3zM17 3h3v17h-3z"/></svg>
@@ -342,7 +365,7 @@
                     <span id="pp-avatar" class="w-9 h-9 rounded-full bg-primary grid place-items-center text-white text-sm font-bold shrink-0">J</span>
                     <div class="min-w-0 flex-1">
                       <p id="pp-title" class="font-display font-bold text-sm leading-none truncate">Jouw buurt</p>
-                      <p id="pp-subtitle" class="text-[11px] font-mono text-ink/45 mt-1 truncate">1071 &middot; DE PIJP</p>
+                      <p id="pp-subtitle" class="text-[11px] font-mono text-ink/45 mt-1 truncate">1071 &middot; De Pijp</p>
                     </div>
                     <button id="pp-bell" type="button" class="pp-tap relative w-9 h-9 rounded-full bg-paper grid place-items-center shrink-0" aria-label="Meldingen openen">
                       <svg class="w-5 h-5 text-ink/55" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/></svg>
@@ -352,7 +375,7 @@
                 </div>
 
                 <!-- BODY: meerdere schermen -->
-                <div id="pp-body" class="relative h-[424px] bg-paper overflow-hidden">
+                <div id="pp-body" class="relative h-[488px] bg-paper overflow-hidden">
 
                   <!-- SCHERM: Buurt (feed) -->
                   <section data-screen="home" class="pp-screen is-active phone-scroll absolute inset-0 overflow-y-auto">
@@ -367,7 +390,7 @@
                       <p data-feedlabel class="eyebrow text-[10px] text-ink/40 px-1">Vandaag</p>
 
                   <!-- 1. activiteit -->
-                  <article data-id="act1" data-cat="buurt" data-type="activiteit" data-title="Samen hardlopen langs de Amstel" data-meta="Morgen 07:30 &middot; ingang Sarphatipark" data-desc="Rustig duurloopje van zo'n 5 km langs de Amstel. Alle niveaus welkom — we blijven netjes bij elkaar en drinken na afloop koffie bij het park." role="button" tabindex="0" class="pp-card bg-white rounded-2xl border border-line shadow-soft p-3.5 w-full text-left block">
+                  <article data-id="act1" data-cat="buurt" data-type="activiteit" data-title="Samen hardlopen langs de Amstel" data-meta="Morgen 07:30 &middot; ingang Sarphatipark" data-desc="Rustig duurloopje van zo'n 5 km langs de Amstel. Alle niveaus welkom. We blijven netjes bij elkaar en drinken na afloop koffie bij het park." role="button" tabindex="0" class="pp-card bg-white rounded-2xl border border-line shadow-soft p-3.5 w-full text-left block">
                     <div class="flex items-center gap-2 mb-2">
                       <span class="w-7 h-7 rounded-lg bg-primary-tint grid place-items-center shrink-0">
                         <svg class="w-4 h-4 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M13 4a1.5 1.5 0 1 0 0-.01M7 21l2.5-5 2.5 2 1-4m-1 4 3 3m-6-9 1-3 3 1 2 3"/></svg>
@@ -392,7 +415,7 @@
                   </article>
 
                   <!-- alert (gemeente/veiligheid) -->
-                  <article data-id="alert1" data-cat="nieuws" data-type="alert" data-title="Code geel: harde windstoten morgen" data-meta="KNMI &middot; geldig do 06:00&ndash;18:00" data-desc="Het KNMI waarschuwt voor zware windstoten tot 90 km/u. Zet tuinmeubels vast en let op loszittende takken. Schade aan de openbare weg melden kan rechtstreeks bij de gemeente." role="button" tabindex="0" class="pp-card bg-clay-tint/70 rounded-2xl border border-clay/30 p-3.5 w-full text-left block">
+                  <article data-id="alert1" data-cat="nieuws" data-type="alert" data-title="Code geel: harde windstoten morgen" data-meta="KNMI &middot; geldig do 06:00 tot 18:00" data-desc="Het KNMI waarschuwt voor zware windstoten tot 90 km/u. Zet tuinmeubels vast en let op loszittende takken. Schade aan de openbare weg melden kan rechtstreeks bij de gemeente." role="button" tabindex="0" class="pp-card bg-clay-tint/70 rounded-2xl border border-clay/30 p-3.5 w-full text-left block">
                     <div class="flex items-center gap-2 mb-1.5">
                       <span class="w-7 h-7 rounded-lg bg-clay/15 grid place-items-center shrink-0">
                         <svg class="w-4 h-4 text-clay-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
@@ -405,7 +428,7 @@
                   </article>
 
                   <!-- gemeentenieuws + reacties -->
-                  <article data-id="gem1" data-cat="nieuws" data-type="gemeente" data-title="Inspraakavond herinrichting Marie Heinekenplein" data-meta="wo 14 mei, 19:30 &middot; buurtcentrum" data-desc="De gemeente toont drie ontwerpen voor het plein: meer groen, meer speelruimte of meer terras. Kom langs en geef je voorkeur door — aanmelden kan tot 12 mei." role="button" tabindex="0" class="pp-card bg-white rounded-2xl border border-line shadow-soft p-3.5 w-full text-left block">
+                  <article data-id="gem1" data-cat="nieuws" data-type="gemeente" data-title="Inspraakavond herinrichting Marie Heinekenplein" data-meta="wo 14 mei, 19:30 &middot; buurtcentrum" data-desc="De gemeente toont drie ontwerpen voor het plein: meer groen, meer speelruimte of meer terras. Kom langs en geef je voorkeur door. Aanmelden kan tot 12 mei." role="button" tabindex="0" class="pp-card bg-white rounded-2xl border border-line shadow-soft p-3.5 w-full text-left block">
                     <div class="flex items-center gap-2 mb-2">
                       <span class="inline-flex items-center gap-1.5 eyebrow text-[9px] text-primary bg-primary-tint rounded-full px-2 py-0.5">
                         <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 21h18M5 21V8l7-4 7 4v13M9 21v-5h6v5"/></svg> Gemeente
@@ -422,7 +445,7 @@
                   </article>
 
                   <!-- eten delen -->
-                  <article data-id="food1" data-cat="buurt" data-type="eten" data-title="Lisa heeft verse soep over" data-meta="Govert Flinckstraat &middot; ophalen vóór 20:00" data-desc="Te veel pompoensoep gemaakt — zonde om weg te gooien. Neem een bakje mee, op = op. Even aanbellen bij nummer 24, dan staat het klaar." role="button" tabindex="0" class="pp-card bg-white rounded-2xl border border-line shadow-soft p-3.5 w-full text-left block">
+                  <article data-id="food1" data-cat="buurt" data-type="eten" data-title="Lisa heeft verse soep over" data-meta="Govert Flinckstraat &middot; ophalen vóór 20:00" data-desc="Te veel pompoensoep gemaakt, zonde om weg te gooien. Neem een bakje mee, op = op. Even aanbellen bij nummer 24, dan staat het klaar." role="button" tabindex="0" class="pp-card bg-white rounded-2xl border border-line shadow-soft p-3.5 w-full text-left block">
                     <div class="flex items-center gap-2 mb-2">
                       <span class="w-7 h-7 rounded-lg bg-accent-tint grid place-items-center shrink-0 text-sm">🍲</span>
                       <p class="eyebrow text-[9px] text-accent-dark">Eten delen</p>
@@ -461,7 +484,7 @@
                   </article>
 
                   <!-- gratis af te halen (giveaway) -->
-                  <article data-id="give1" data-cat="buurt" data-type="giveaway" data-title="Gratis af te halen: 3 plantenbakken" data-meta="Eerste Jacob van Campenstraat" data-desc="Verhuisd en geen balkon meer — drie stevige terracotta plantenbakken zoeken een nieuw thuis. Gratis, mits zelf ophalen. Wie het eerst komt…" role="button" tabindex="0" class="pp-card bg-white rounded-2xl border border-line shadow-soft p-3.5 w-full text-left block">
+                  <article data-id="give1" data-cat="buurt" data-type="giveaway" data-title="Gratis af te halen: 3 plantenbakken" data-meta="Eerste Jacob van Campenstraat" data-desc="Verhuisd en geen balkon meer. Drie stevige terracotta plantenbakken zoeken een nieuw thuis. Gratis, mits zelf ophalen. Wie het eerst komt…" role="button" tabindex="0" class="pp-card bg-white rounded-2xl border border-line shadow-soft p-3.5 w-full text-left block">
                     <div class="flex items-center gap-2 mb-2">
                       <span class="w-7 h-7 rounded-lg bg-primary-tint grid place-items-center shrink-0 text-sm">🪴</span>
                       <p class="eyebrow text-[9px] text-primary">Gratis af te halen</p>
@@ -489,25 +512,25 @@
                   </article>
 
                   <!-- praatje -->
-                  <article data-id="praat1" data-cat="buurt" data-type="praatje" data-title="Nieuw in de straat — hoi! 👋" data-meta="Tom &middot; net verhuisd naar 1071" data-desc="Hoi buren! Tom hier, sinds dit weekend op nummer 12. Ik hou van koken en tuinieren. Tips voor een goede groenteboer of leuke plekken in de buurt zijn welkom!" role="button" tabindex="0" class="pp-card bg-white rounded-2xl border border-line shadow-soft p-3.5 w-full text-left block">
+                  <article data-id="praat1" data-cat="buurt" data-type="praatje" data-title="Nieuw in de straat, hoi! 👋" data-meta="Tom &middot; net verhuisd naar 1071" data-desc="Hoi buren! Tom hier, sinds dit weekend op nummer 12. Ik hou van koken en tuinieren. Tips voor een goede groenteboer of leuke plekken in de buurt zijn welkom!" role="button" tabindex="0" class="pp-card bg-white rounded-2xl border border-line shadow-soft p-3.5 w-full text-left block">
                     <div class="flex items-center gap-2 mb-2">
                       <span class="w-7 h-7 rounded-full bg-clay grid place-items-center shrink-0 text-white text-[11px] font-bold">T</span>
                       <p class="eyebrow text-[9px] text-clay-dark">Praatje &middot; Tom</p>
                       <svg class="w-4 h-4 text-ink/25 ml-auto shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m9 6 6 6-6 6"/></svg>
                     </div>
-                    <p class="font-semibold text-sm leading-snug">Nieuw in de straat — hoi! 👋</p>
+                    <p class="font-semibold text-sm leading-snug">Nieuw in de straat, hoi! 👋</p>
                     <p class="text-xs text-ink/50 mt-0.5">Stelt zich voor aan de buurt</p>
                     <button data-act type="button" class="pp-action btn w-full text-xs font-bold py-2.5 rounded-lg bg-clay-dark text-white hover:shadow-md mt-2.5">Zeg hoi 👋</button>
                   </article>
 
-                      <p class="text-center text-[11px] text-ink/35 pt-1.5 pb-1">Je bent helemaal bij &middot; geen reclame, geen ruis</p>
+                      <p class="text-center text-[11px] text-ink/35 pt-1.5 pb-1">Je bent weer helemaal bij</p>
                     </div>
                   </section>
 
                   <!-- SCHERM: Agenda -->
                   <section data-screen="agenda" class="pp-screen phone-scroll absolute inset-0 overflow-y-auto px-3.5 py-3.5 space-y-3">
                     <p class="eyebrow text-[10px] text-ink/40 px-1">Morgen</p>
-                    <article data-id="act1" data-cat="buurt" data-type="activiteit" data-title="Samen hardlopen langs de Amstel" data-meta="Morgen 07:30 &middot; ingang Sarphatipark" data-desc="Rustig duurloopje van zo'n 5 km langs de Amstel. Alle niveaus welkom — we blijven netjes bij elkaar en drinken na afloop koffie bij het park." role="button" tabindex="0" class="pp-card bg-white rounded-2xl border border-line shadow-soft p-3 w-full text-left flex items-center gap-3">
+                    <article data-id="act1" data-cat="buurt" data-type="activiteit" data-title="Samen hardlopen langs de Amstel" data-meta="Morgen 07:30 &middot; ingang Sarphatipark" data-desc="Rustig duurloopje van zo'n 5 km langs de Amstel. Alle niveaus welkom. We blijven netjes bij elkaar en drinken na afloop koffie bij het park." role="button" tabindex="0" class="pp-card bg-white rounded-2xl border border-line shadow-soft p-3 w-full text-left flex items-center gap-3">
                       <div class="w-11 shrink-0 text-center">
                         <p class="eyebrow text-[8px] text-ink/40 leading-none">mei</p>
                         <p class="font-display font-bold text-xl leading-none text-primary mt-0.5">28</p>
@@ -555,7 +578,7 @@
                       </div>
                       <button data-act type="button" class="pp-action btn btn-primary text-[11px] font-bold px-3 py-1.5 rounded-lg shrink-0">Aanmelden</button>
                     </article>
-                    <article data-id="ev_borrel" data-cat="buurt" data-type="activiteit" data-title="Maandelijkse buurtborrel" data-meta="Vrijdag 17:00 &middot; café De Pijp" data-desc="Onze vaste vrijdagborrel — even bijkletsen met de buren onder het genot van een drankje. Nieuwe gezichten extra welkom." role="button" tabindex="0" class="pp-card bg-white rounded-2xl border border-line shadow-soft p-3 w-full text-left flex items-center gap-3">
+                    <article data-id="ev_borrel" data-cat="buurt" data-type="activiteit" data-title="Maandelijkse buurtborrel" data-meta="Vrijdag 17:00 &middot; café De Pijp" data-desc="Onze vaste vrijdagborrel. Even bijkletsen met de buren onder het genot van een drankje. Nieuwe gezichten extra welkom." role="button" tabindex="0" class="pp-card bg-white rounded-2xl border border-line shadow-soft p-3 w-full text-left flex items-center gap-3">
                       <div class="w-11 shrink-0 text-center">
                         <p class="eyebrow text-[8px] text-ink/40 leading-none">jun</p>
                         <p class="font-display font-bold text-xl leading-none text-primary mt-0.5">06</p>
@@ -605,7 +628,7 @@
                       <span class="w-14 h-14 rounded-full bg-primary grid place-items-center text-white text-xl font-bold shrink-0">J</span>
                       <div class="min-w-0">
                         <p class="font-display font-bold text-base leading-tight">Jij</p>
-                        <p class="text-[11px] text-ink/50 font-mono">1071 &middot; DE PIJP &middot; lid sinds mei</p>
+                        <p class="text-[11px] text-ink/50 font-mono">1071 &middot; De Pijp &middot; lid sinds mei</p>
                       </div>
                     </div>
                     <div class="grid grid-cols-3 gap-2 text-center">
@@ -683,7 +706,7 @@
                     <button data-open="food1" type="button" class="pp-notif pp-tap w-full flex items-start gap-2.5 bg-white rounded-xl border border-line p-3 text-left">
                       <span class="w-8 h-8 rounded-lg bg-accent-tint grid place-items-center shrink-0 text-sm">🍲</span>
                       <div class="min-w-0 flex-1">
-                        <p class="text-xs leading-snug"><span class="font-bold">Lisa</span> deelt soep — nog een paar porties over</p>
+                        <p class="text-xs leading-snug"><span class="font-bold">Lisa</span> deelt soep, nog een paar porties over</p>
                         <p class="text-[10px] text-ink/40 mt-0.5">3 uur geleden</p>
                       </div>
                       <span class="pp-dot w-2 h-2 rounded-full bg-accent shrink-0 mt-1.5"></span>
@@ -711,9 +734,9 @@
                   <section data-screen="detail" data-id="" class="pp-screen phone-scroll absolute inset-0 overflow-y-auto">
                     <div class="px-4 pt-4 pb-1">
                       <span id="pp-d-chip" class="inline-flex items-center gap-1.5 eyebrow text-[9px] text-primary bg-primary-tint rounded-full px-2 py-0.5">Buurtactiviteit</span>
-                      <h3 id="pp-d-title" class="font-display font-bold text-base leading-snug mt-2.5">—</h3>
-                      <p id="pp-d-meta" class="text-[11px] text-ink/50 mt-1 font-mono">—</p>
-                      <p id="pp-d-desc" class="text-sm text-ink/70 leading-relaxed mt-3">—</p>
+                      <h3 id="pp-d-title" class="font-display font-bold text-base leading-snug mt-2.5"></h3>
+                      <p id="pp-d-meta" class="text-[11px] text-ink/50 mt-1 font-mono"></p>
+                      <p id="pp-d-desc" class="text-sm text-ink/70 leading-relaxed mt-3"></p>
                       <div id="pp-d-people" class="hidden items-center gap-2 mt-4">
                         <div class="flex -space-x-2" aria-hidden="true">
                           <span class="w-7 h-7 rounded-full bg-primary grid place-items-center text-white text-[10px] font-bold ring-2 ring-white">S</span>
@@ -772,8 +795,8 @@
                     Agenda
                   </button>
                   <button data-tab="compose" type="button" class="pp-tab pp-tap flex flex-col items-center gap-1" aria-label="Plaatsen">
-                    <span class="w-9 h-9 -mt-1.5 rounded-full bg-primary grid place-items-center text-white shadow-card">
-                      <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12h14"/></svg>
+                    <span class="w-12 h-12 -mt-5 rounded-full bg-gradient-to-br from-primary-light to-primary grid place-items-center text-white shadow-lift ring-4 ring-white">
+                      <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12h14"/></svg>
                     </span>
                     Plaatsen
                   </button>
@@ -797,9 +820,9 @@
             <p class="eyebrow inline-flex items-center gap-2 text-[12px] text-accent-dark mb-4">
               <span class="w-6 h-px bg-accent"></span> Het probleem
             </p>
-            <h2 class="font-display font-extrabold text-3xl sm:text-[2.4rem] leading-[1.12] tracking-tight">Je buurt gebeurt overal &mdash; behalve op één plek.</h2>
-            <p class="mt-5 text-lg text-ink/65 leading-relaxed">Een vergunning op de gemeentesite, werkzaamheden in een aparte nieuwsbrief, een buurtfeest ergens in een Facebookgroep. En de buurman die je elke dag tegenkomt? Daar weet je eigenlijk nog steeds de naam niet van.</p>
-            <p class="mt-4 text-lg text-ink/65 leading-relaxed">Het is niet dat er niks gebeurt. Het staat alleen verspreid &mdash; en de mensen om je heen blijven vreemden.</p>
+            <h2 class="font-display font-extrabold text-3xl sm:text-[2.4rem] leading-[1.12] tracking-tight">Je buurt gebeurt overal. Alleen niet op één plek.</h2>
+            <p class="mt-5 text-lg text-ink/65 leading-relaxed">Een vergunning op de gemeentesite, werkzaamheden in een nieuwsbrief, een buurtfeest in een Facebookgroep. En die buurman die je elke dag tegenkomt? Z'n naam weet je nog steeds niet.</p>
+            <p class="mt-4 text-lg text-ink/65 leading-relaxed">Er gebeurt genoeg. Het staat alleen overal verspreid, en je buren blijven vreemden.</p>
           </div>
 
           <div class="reveal from-right" style="transition-delay:.12s">
@@ -857,7 +880,7 @@
             <span class="w-6 h-px bg-primary"></span> Wat je krijgt
           </p>
           <h2 class="font-display font-extrabold text-3xl sm:text-[2.6rem] leading-[1.1] tracking-tight">Het buurtnieuws, automatisch verzameld.</h2>
-          <p class="mt-5 text-lg text-ink/65 leading-relaxed">We halen het op uit openbare en lokale bronnen en sorteren het op jouw buurt. Geen redactie die iets verzint &mdash; gewoon wat er echt speelt om de hoek.</p>
+          <p class="mt-5 text-lg text-ink/65 leading-relaxed">We verzamelen het uit openbare bronnen en zetten het op jouw buurt. Geen verzonnen nieuws, gewoon wat er speelt.</p>
         </div>
 
         <div class="grid sm:grid-cols-2 gap-5" data-stagger="80">
@@ -868,7 +891,7 @@
               </span>
               <h3 class="font-display font-bold text-lg">Gemeente &amp; besluiten</h3>
             </div>
-            <p class="text-ink/60 leading-relaxed text-[15px] mb-4">Vergunningen, plannen en besluiten die jouw straat raken &mdash; in gewone taal samengevat.</p>
+            <p class="text-ink/60 leading-relaxed text-[15px] mb-4">Vergunningen, plannen en besluiten die jouw straat raken. In gewone taal samengevat.</p>
             <ul class="space-y-2 text-sm text-ink/70">
               <li class="flex items-start gap-2"><span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-primary shrink-0"></span> Inspraakavond herinrichting Marie Heinekenplein</li>
               <li class="flex items-start gap-2"><span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-primary shrink-0"></span> Kapvergunning aangevraagd aan de Lijnbaansgracht</li>
@@ -886,7 +909,7 @@
             <p class="text-ink/60 leading-relaxed text-[15px] mb-4">Afsluitingen, opbrekingen en omleidingen, zodat je niet voor een dichte straat staat.</p>
             <ul class="space-y-2 text-sm text-ink/70">
               <li class="flex items-start gap-2"><span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent shrink-0"></span> Ferdinand Bolstraat deels afgesloten t/m 6 juni</li>
-              <li class="flex items-start gap-2"><span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent shrink-0"></span> Nachtwerk aan het spoor, 3&ndash;5 juni</li>
+              <li class="flex items-start gap-2"><span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent shrink-0"></span> Nachtwerk aan het spoor, 3 t/m 5 juni</li>
               <li class="flex items-start gap-2"><span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent shrink-0"></span> Afval wordt deze week een dag later opgehaald</li>
             </ul>
           </article>
@@ -898,7 +921,7 @@
               </span>
               <h3 class="font-display font-bold text-lg">Evenementen &amp; activiteiten</h3>
             </div>
-            <p class="text-ink/60 leading-relaxed text-[15px] mb-4">Markten, buurtfeesten en initiatieven om de hoek &mdash; met datum en tijd, zodat je erbij kunt zijn.</p>
+            <p class="text-ink/60 leading-relaxed text-[15px] mb-4">Markten, buurtfeesten en initiatieven om de hoek. Met datum en tijd, zodat je erbij kunt zijn.</p>
             <ul class="space-y-2 text-sm text-ink/70">
               <li class="flex items-start gap-2"><span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-clay shrink-0"></span> Boekenmarkt op het Sarphatipark, zondag</li>
               <li class="flex items-start gap-2"><span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-clay shrink-0"></span> Buurtmoestuin zoekt vrijwilligers</li>
@@ -924,7 +947,7 @@
 
         <p class="reveal mt-6 text-sm text-ink/60 flex items-start gap-2 bg-primary-tint/60 rounded-2xl px-4 py-3.5">
           <svg class="w-4 h-4 text-primary shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21s7-5.7 7-11a7 7 0 1 0-14 0c0 5.3 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
-          Lees je over een buurtfeest of opruimactie? Met één tik zie je wie er ook gaat &mdash; en zo loopt nieuws vanzelf over in een praatje.
+          Lees je over een buurtfeest of opruimactie? Met één tik zie je wie er nog meer gaat. Zo loopt nieuws vanzelf over in een praatje.
         </p>
       </div>
     </section>
@@ -947,7 +970,7 @@
             </span>
             <div>
               <h3 class="font-display font-bold text-lg">Samen iets doen</h3>
-              <p class="text-ink/60 leading-relaxed text-[15px] mt-1.5">Een ochtendrondje hardlopen, samen naar de markt of koffie op het pleintje. Je ziet wie er gaat en tikt op <span class="font-semibold text-ink">"Ik ga"</span> &mdash; meer is het niet.</p>
+              <p class="text-ink/60 leading-relaxed text-[15px] mt-1.5">Een ochtendrondje hardlopen, samen naar de markt of koffie op het pleintje. Je ziet wie er gaat en tikt op <span class="font-semibold text-ink">"Ik ga"</span>. Meer is het niet.</p>
             </div>
           </article>
 
@@ -955,7 +978,7 @@
             <span class="w-12 h-12 rounded-2xl bg-accent-tint grid place-items-center shrink-0 text-2xl">🍲</span>
             <div>
               <h3 class="font-display font-bold text-lg">Eten delen</h3>
-              <p class="text-ink/60 leading-relaxed text-[15px] mt-1.5">Te veel gekookt? Bied een portie aan in plaats van weggooien. Een buur loopt langs, jullie maken een praatje &mdash; minder verspilling, meer contact.</p>
+              <p class="text-ink/60 leading-relaxed text-[15px] mt-1.5">Te veel gekookt? Bied een portie aan in plaats van weggooien. Een buur loopt langs, jullie maken een praatje. Minder verspilling, meer contact.</p>
             </div>
           </article>
 
@@ -971,7 +994,7 @@
             <span class="w-12 h-12 rounded-2xl bg-primary-tint grid place-items-center shrink-0 text-2xl">👋</span>
             <div>
               <h3 class="font-display font-bold text-lg">Even een praatje</h3>
-              <p class="text-ink/60 leading-relaxed text-[15px] mt-1.5">Nieuw in de straat of zin in een wandelmaatje? Stel jezelf rustig voor. Klikt het? Dan wisselen jullie pas contact uit &mdash; jij houdt de regie.</p>
+              <p class="text-ink/60 leading-relaxed text-[15px] mt-1.5">Nieuw in de straat of zin in een wandelmaatje? Stel jezelf rustig voor. Klikt het? Dan wisselen jullie pas contact uit. Jij houdt de regie.</p>
             </div>
           </article>
         </div>
@@ -999,10 +1022,10 @@
           <div class="reveal">
             <div class="bg-white rounded-3xl border border-line shadow-card p-7 h-full">
               <div class="flex items-center justify-between mb-5">
-                <span class="w-12 h-12 rounded-2xl bg-primary-tint grid place-items-center">
-                  <svg class="w-6 h-6 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21s7-5.7 7-11a7 7 0 1 0-14 0c0 5.3 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+                <span class="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary-light to-primary grid place-items-center shadow-soft">
+                  <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21s7-5.7 7-11a7 7 0 1 0-14 0c0 5.3 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
                 </span>
-                <span class="font-mono text-4xl font-bold text-line">01</span>
+                <span class="font-mono text-4xl font-bold text-primary/15">01</span>
               </div>
               <h3 class="font-display font-bold text-lg mb-2">Vul je postcode in</h3>
               <p class="text-ink/60 leading-relaxed">Zo weten we precies welke buurt voor jou relevant is. Geen volledig adres nodig.</p>
@@ -1012,26 +1035,26 @@
           <div class="reveal md:mt-8">
             <div class="bg-white rounded-3xl border border-line shadow-card p-7 h-full">
               <div class="flex items-center justify-between mb-5">
-                <span class="w-12 h-12 rounded-2xl bg-accent-tint grid place-items-center">
-                  <svg class="w-6 h-6 text-accent-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2M12 3v12m0 0 4-4m-4 4-4-4"/></svg>
+                <span class="w-12 h-12 rounded-2xl bg-gradient-to-br from-accent to-accent-dark grid place-items-center shadow-soft">
+                  <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2M12 3v12m0 0 4-4m-4 4-4-4"/></svg>
                 </span>
-                <span class="font-mono text-4xl font-bold text-line">02</span>
+                <span class="font-mono text-4xl font-bold text-accent/20">02</span>
               </div>
               <h3 class="font-display font-bold text-lg mb-2">Wij verzamelen het nieuws</h3>
-              <p class="text-ink/60 leading-relaxed">BuurtBabbel haalt nieuws op uit gemeente, lokale media en verkeersbronnen en zet het op jouw buurt &mdash; netjes op een rij.</p>
+              <p class="text-ink/60 leading-relaxed">BuurtBabbel haalt nieuws op uit gemeente, lokale media en verkeersbronnen en zet het op jouw buurt. Netjes op een rij.</p>
             </div>
           </div>
 
           <div class="reveal md:mt-16">
             <div class="bg-white rounded-3xl border border-line shadow-card p-7 h-full">
               <div class="flex items-center justify-between mb-5">
-                <span class="w-12 h-12 rounded-2xl bg-clay-tint grid place-items-center">
-                  <svg class="w-6 h-6 text-clay-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a4 4 0 0 0-3-3.87M9 20H4v-2a4 4 0 0 1 3-3.87m6-1.13a4 4 0 1 0-4-4M16 7a3 3 0 1 1 1 5.83"/></svg>
+                <span class="w-12 h-12 rounded-2xl bg-gradient-to-br from-clay to-clay-dark grid place-items-center shadow-soft">
+                  <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a4 4 0 0 0-3-3.87M9 20H4v-2a4 4 0 0 1 3-3.87m6-1.13a4 4 0 1 0-4-4M16 7a3 3 0 1 1 1 5.83"/></svg>
                 </span>
-                <span class="font-mono text-4xl font-bold text-line">03</span>
+                <span class="font-mono text-4xl font-bold text-clay/20">03</span>
               </div>
               <h3 class="font-display font-bold text-lg mb-2">Lees mee &amp; doe mee</h3>
-              <p class="text-ink/60 leading-relaxed">Blijf op de hoogte in de app of de vrijdagmail &mdash; en sluit aan bij wat je leuk lijkt. Helemaal aan jou.</p>
+              <p class="text-ink/60 leading-relaxed">Blijf op de hoogte in de app of de vrijdagmail. En sluit aan bij wat je leuk lijkt, helemaal aan jou.</p>
             </div>
           </div>
         </div>
@@ -1047,7 +1070,7 @@
             <span class="w-6 h-px bg-accent"></span> De wekelijkse buurtmail
           </p>
           <h2 class="font-display font-extrabold text-3xl sm:text-[2.6rem] leading-[1.1] tracking-tight">Elke vrijdag jouw buurt samengevat.</h2>
-          <p class="mt-5 text-lg text-ink/65 leading-relaxed">Geen zin om de app te checken? Hoeft niet. De buurtmail bundelt het belangrijkste van de week: wat er aankomt, wat er besloten is en wat er dit weekend te doen is &mdash; inclusief waar je kunt aanhaken. Eén mail, een minuut lezen.</p>
+          <p class="mt-5 text-lg text-ink/65 leading-relaxed">Geen zin om de app te checken? Hoeft niet. De buurtmail bundelt het belangrijkste van de week: wat er aankomt, wat er besloten is en wat er te doen is. Eén mail, een minuut lezen.</p>
           <ul class="mt-7 space-y-3.5">
             <li class="flex items-center gap-3"><span class="w-7 h-7 rounded-lg bg-primary-tint grid place-items-center shrink-0"><svg class="w-4 h-4 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="m5 13 4 4L19 7"/></svg></span><span class="text-ink/75">Werkzaamheden die jouw straat raken</span></li>
             <li class="flex items-center gap-3"><span class="w-7 h-7 rounded-lg bg-primary-tint grid place-items-center shrink-0"><svg class="w-4 h-4 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="m5 13 4 4L19 7"/></svg></span><span class="text-ink/75">Gemeentebesluiten, kort samengevat</span></li>
@@ -1076,12 +1099,12 @@
                   <span class="ml-auto text-[11px] text-ink/40">vr</span>
                 </div>
                 <p class="font-display font-extrabold text-lg mt-4">Deze week in De Pijp</p>
-                <p class="text-sm text-ink/55 mt-1">Het belangrijkste &mdash; en waar je kunt aanhaken:</p>
+                <p class="text-sm text-ink/55 mt-1">Het belangrijkste, en waar je kunt aanhaken:</p>
               </div>
               <div class="p-5 space-y-2.5">
                 <div class="flex items-start gap-3 bg-accent-tint rounded-xl p-3">
                   <span class="text-lg leading-none mt-0.5">🚧</span>
-                  <div class="min-w-0"><p class="text-sm font-semibold leading-snug">Ferdinand Bolstraat: nachtwerk 3&ndash;5 juni</p><p class="text-xs text-ink/50 mt-0.5">Rijbaan afgesloten tussen 22:00 en 06:00</p></div>
+                  <div class="min-w-0"><p class="text-sm font-semibold leading-snug">Ferdinand Bolstraat: nachtwerk 3 t/m 5 juni</p><p class="text-xs text-ink/50 mt-0.5">Rijbaan afgesloten tussen 22:00 en 06:00</p></div>
                 </div>
                 <div class="flex items-start gap-3 bg-primary-tint rounded-xl p-3">
                   <span class="text-lg leading-none mt-0.5">🏛️</span>
@@ -1120,7 +1143,7 @@
               <span class="w-10 h-10 rounded-full bg-primary grid place-items-center text-white font-bold">F</span>
               <div>
                 <p class="font-semibold text-sm">Fatima</p>
-                <p class="text-xs text-ink/45 font-mono">DE PIJP</p>
+                <p class="text-xs text-ink/45 font-mono">De Pijp</p>
               </div>
             </figcaption>
           </figure>
@@ -1132,7 +1155,7 @@
               <span class="w-10 h-10 rounded-full bg-accent grid place-items-center text-white font-bold">J</span>
               <div>
                 <p class="font-semibold text-sm">Johan</p>
-                <p class="text-xs text-ink/45 font-mono">LOMBOK</p>
+                <p class="text-xs text-ink/45 font-mono">Lombok</p>
               </div>
             </figcaption>
           </figure>
@@ -1144,7 +1167,7 @@
               <span class="w-10 h-10 rounded-full bg-clay grid place-items-center text-white font-bold">S</span>
               <div>
                 <p class="font-semibold text-sm">Sanne</p>
-                <p class="text-xs text-ink/45 font-mono">ZEEHELDENBUURT</p>
+                <p class="text-xs text-ink/45 font-mono">Zeeheldenbuurt</p>
               </div>
             </figcaption>
           </figure>
@@ -1169,9 +1192,9 @@
             <p class="text-sm text-ink/60 leading-relaxed">Genoeg om je het juiste buurtnieuws te tonen. Geen volledig adres nodig.</p>
           </div>
           <div class="reveal bg-white rounded-3xl border border-line shadow-card p-7">
-            <span class="w-11 h-11 rounded-xl bg-accent-tint grid place-items-center mb-4"><svg class="w-5 h-5 text-accent-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" stroke-linejoin="round" d="M5.6 5.6 18.4 18.4"/></svg></span>
-            <h3 class="font-display font-bold mb-1.5">Geen reclame, geen verkoop</h3>
-            <p class="text-sm text-ink/60 leading-relaxed">We verdienen niets aan je gegevens en tonen geen advertenties. Je buurt is geen verdienmodel.</p>
+            <span class="w-11 h-11 rounded-xl bg-accent-tint grid place-items-center mb-4"><svg class="w-5 h-5 text-accent-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="9" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span>
+            <h3 class="font-display font-bold mb-1.5">Je gegevens blijven van jou</h3>
+            <p class="text-sm text-ink/60 leading-relaxed">We verkopen je postcode en e-mailadres niet door aan anderen.</p>
           </div>
           <div class="reveal bg-white rounded-3xl border border-line shadow-card p-7">
             <span class="w-11 h-11 rounded-xl bg-clay-tint grid place-items-center mb-4"><svg class="w-5 h-5 text-clay-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3 4 6v6c0 5 3.4 8.4 8 9 4.6-.6 8-4 8-9V6l-8-3Zm-2.5 9 2 2 3.5-4"/></svg></span>
@@ -1203,7 +1226,7 @@
               <span class="font-display font-bold text-ink">Wat kost BuurtBabbel?</span>
               <span class="faq-icon shrink-0 w-7 h-7 rounded-full bg-primary-tint grid place-items-center text-primary"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" d="M12 5v14M5 12h14"/></svg></span>
             </button>
-            <div class="faq-panel"><p class="px-5 pb-5 text-ink/65 leading-relaxed">Het buurtnieuws en de wekelijkse mail zijn gratis. We tonen geen advertenties. Mogelijk komt er later een vrijwillige bijdrage voor extra functies, maar de basis blijft gratis.</p></div>
+            <div class="faq-panel"><p class="px-5 pb-5 text-ink/65 leading-relaxed">Het buurtnieuws en de wekelijkse mail zijn gratis. Misschien komen er later extra functies tegen een kleine vergoeding, maar de basis blijft gratis.</p></div>
           </div>
 
           <div class="reveal faq-item bg-paper rounded-2xl border border-line overflow-hidden">
@@ -1243,7 +1266,7 @@
               <span class="font-display font-bold text-ink">Wat doen jullie met mijn gegevens?</span>
               <span class="faq-icon shrink-0 w-7 h-7 rounded-full bg-primary-tint grid place-items-center text-primary"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" d="M12 5v14M5 12h14"/></svg></span>
             </button>
-            <div class="faq-panel"><p class="px-5 pb-5 text-ink/65 leading-relaxed">We bewaren je postcode en e-mailadres om je het juiste nieuws te kunnen sturen. Geen verkoop aan derden, geen advertentienetwerken. Uitschrijven kan altijd met één tik.</p></div>
+            <div class="faq-panel"><p class="px-5 pb-5 text-ink/65 leading-relaxed">We bewaren je postcode en e-mailadres om je het juiste nieuws te sturen. We verkopen je gegevens niet door. Uitschrijven kan altijd met één tik.</p></div>
           </div>
         </div>
       </div>
@@ -1252,31 +1275,31 @@
     <!-- EIND CTA -->
     <section class="py-20 sm:py-28">
       <div class="max-w-6xl mx-auto px-4">
-        <div class="reveal relative overflow-hidden rounded-[2.5rem] bg-primary text-white px-6 py-14 sm:px-12 sm:py-16 shadow-lift">
+        <div class="reveal relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#1C7A49] via-primary to-primary-dark text-white px-6 py-14 sm:px-12 sm:py-16 shadow-lift">
           <div class="map-grid absolute inset-0 opacity-20" aria-hidden="true"></div>
           <div class="absolute -top-16 -right-10 w-72 h-72 rounded-full bg-accent/25 blur-3xl" aria-hidden="true"></div>
           <div class="absolute -bottom-20 -left-10 w-72 h-72 rounded-full bg-clay/20 blur-3xl" aria-hidden="true"></div>
 
           <div class="relative max-w-2xl mx-auto text-center">
-            <h2 class="font-display font-extrabold text-3xl sm:text-[2.6rem] leading-[1.1] tracking-tight">Leer je buurt kennen &mdash; het nieuws én de mensen.</h2>
+            <h2 class="font-display font-extrabold text-3xl sm:text-[2.6rem] leading-[1.1] tracking-tight">Het nieuws van je buurt. En de mensen erbij.</h2>
             <p class="mt-5 text-lg text-white/80">Vul je postcode in. We geven een seintje zodra BuurtBabbel bij jou start en sturen je de eerste wekelijkse buurtmail.</p>
 
             <form id="footer-form" class="lead-form mt-9 max-w-xl mx-auto" novalidate>
               <div class="form-shell flex flex-col sm:flex-row gap-2.5 p-2 bg-white rounded-2xl shadow-card text-ink">
-                <div class="flex-1 flex items-center gap-2 px-3">
+                <div class="flex-1 min-w-0 flex items-center gap-2 px-3">
                   <svg class="w-5 h-5 text-ink/30 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5 12 13l9-5.5M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z"/></svg>
                   <label for="footer-email" class="sr-only">Je e-mailadres</label>
                   <input type="email" id="footer-email" name="email" placeholder="Je e-mailadres" required autocomplete="email" class="w-full py-3 bg-transparent placeholder:text-ink/40 focus:outline-none" />
                 </div>
-                <div class="flex items-center gap-2 px-3 sm:border-l border-line sm:w-44">
+                <div class="flex items-center gap-2 px-3 sm:border-l border-line sm:w-32">
                   <svg class="w-5 h-5 text-ink/30 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C7.86 2 4.5 5.36 4.5 9.5c0 5.25 6.2 11.4 7.04 12.2a.66.66 0 0 0 .92 0c.84-.8 7.04-6.95 7.04-12.2C19.5 5.36 16.14 2 12 2Zm0 9.75A2.25 2.25 0 1 1 12 7.25a2.25 2.25 0 0 1 0 4.5Z"/></svg>
                   <label for="footer-postcode" class="sr-only">Je postcode</label>
                   <input type="text" id="footer-postcode" name="postcode" placeholder="1234 AB" required maxlength="7" autocomplete="postal-code" class="w-full py-3 bg-transparent placeholder:text-ink/40 focus:outline-none font-mono uppercase tracking-wider" />
                 </div>
-                <button type="submit" class="btn font-display font-bold px-6 py-3.5 rounded-xl whitespace-nowrap bg-accent text-ink hover:-translate-y-0.5 hover:shadow-lg">Hou me op de hoogte</button>
+                <button type="submit" class="btn font-display font-bold px-4 py-3.5 rounded-xl whitespace-nowrap bg-accent text-ink hover:-translate-y-0.5 hover:shadow-lg">Hou me op de hoogte</button>
               </div>
               <p class="form-error hidden text-sm text-white font-medium mt-2 bg-clay-dark rounded-lg px-3 py-1.5 inline-block"></p>
-              <p class="text-sm text-white/65 mt-3">Gratis &middot; geen advertenties &middot; uitschrijven met 1 tik</p>
+              <p class="text-sm text-white/65 mt-3">Gratis &middot; uitschrijven met 1 tik</p>
             </form>
           </div>
         </div>
@@ -1290,12 +1313,12 @@
       <div class="grid md:grid-cols-[2fr_1fr_1fr] gap-10">
         <div>
           <a href="#hero" class="flex items-center gap-2.5 mb-4">
-            <span class="w-9 h-9 rounded-xl bg-primary grid place-items-center">
+            <span class="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-light to-primary grid place-items-center">
               <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C7.86 2 4.5 5.36 4.5 9.5c0 5.25 6.2 11.4 7.04 12.2a.66.66 0 0 0 .92 0c.84-.8 7.04-6.95 7.04-12.2C19.5 5.36 16.14 2 12 2Zm0 9.75A2.25 2.25 0 1 1 12 7.25a2.25 2.25 0 0 1 0 4.5Z"/></svg>
             </span>
             <span class="font-display font-extrabold text-lg text-white">Buurt<span class="text-primary-light">Babbel</span></span>
           </a>
-          <p class="text-sm leading-relaxed max-w-xs">Weet wat er speelt in je buurt, en leer de mensen kennen die er wonen. Op postcode, in de app en elke week in je mail.</p>
+          <p class="text-sm leading-relaxed max-w-xs">Weet wat er speelt in je buurt, en leer de mensen kennen die er wonen. Op postcode, in de app en elke vrijdag in je mail.</p>
         </div>
 
         <div>
@@ -1497,10 +1520,10 @@
       const stats = { join: 0, react: 0, help: 0 };
 
       const headerCfg = {
-        home:    { title: 'Jouw buurt', sub: '1071 \u00b7 DE PIJP',        avatar: 'J',  back: false, bell: true },
-        agenda:  { title: 'Agenda',     sub: 'mei \u2013 juni 2026',        avatar: '\uD83D\uDCC5', back: false, bell: true },
+        home:    { title: 'Jouw buurt', sub: '1071 \u00b7 De Pijp',        avatar: 'J',  back: false, bell: true },
+        agenda:  { title: 'Agenda',     sub: 'Wat er aankomt',             avatar: '\uD83D\uDCC5', back: false, bell: true },
         compose: { title: 'Plaatsen',   sub: 'Deel iets met de buurt',     avatar: null, back: false, bell: false },
-        profile: { title: 'Profiel',    sub: '1071 \u00b7 DE PIJP',        avatar: 'J',  back: false, bell: false },
+        profile: { title: 'Profiel',    sub: '1071 \u00b7 De Pijp',        avatar: 'J',  back: false, bell: false },
         notifs:  { title: 'Meldingen',  sub: 'Wat er speelde',             avatar: null, back: true,  bell: false },
         detail:  { title: 'Bericht',    sub: 'Uit jouw buurt',             avatar: null, back: true,  bell: false },
       };
@@ -1649,7 +1672,7 @@
         if (it.statKey) setStat(it.statKey, it.on ? 1 : -1);
         if (it.on) {
           toast(it.type === 'hulp' ? 'Je helpt een buur \uD83E\uDD1D'
-            : it.type === 'giveaway' ? 'Gereserveerd \u2014 spreek af om op te halen'
+            : it.type === 'giveaway' ? 'Gereserveerd. Spreek af om op te halen'
             : it.type === 'praatje' ? 'Je zei hoi \uD83D\uDC4B'
             : 'Je doet mee \uD83C\uDF89');
         }
